@@ -1,8 +1,10 @@
-#pragma once
+#ifndef COMMONS_H
+#define COMMONS_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdint.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_font.h>
@@ -10,20 +12,25 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
-// math constant
-#define PI 3.1415926535
-// window width and height
+/* math constants */
+extern const double PI;
+
+/* window rendering constants */
+extern const double DEFAULT_WINDOW_WIDTH;
+extern const double DEFAULT_WINDOW_HEIGHT;
+extern const double FPS;
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-// game FPS definition
-#define FPS 66.0
+
 // table width and height and position
 #define TABLE_WIDTH 800
 #define TABLE_HEIGHT 400
 #define TABLE_Y_POSITION 200
 #define TABLE_BORDER_WIDTH 26
+
 // bag size
 #define BAG_RADIUS 27
+
 // table border locations
 // horizontal borders
 #define HORIZONTAL_BORDER_START_X1 (TABLE_BORDER_WIDTH + BAG_RADIUS)
@@ -61,5 +68,4 @@
 #define VB_SY VERTICAL_BORDER_START_Y
 #define VB_EY VERTICAL_BORDER_END_Y
 
-// end of common constants
-
+#endif /* end of include guard: COMMONS_H */
