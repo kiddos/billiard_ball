@@ -1,0 +1,1 @@
+vim -p ./src/main.c ./src/commons.h ./src/menu.h ./src/menu.c ./src/score_board.h ./src/score_board.c ./src/background.h ./src/background.c ./src/Makefile
