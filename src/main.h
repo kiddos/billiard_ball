@@ -5,30 +5,47 @@
 #include <allegro5/allegro_native_dialog.h>
 
 #include "commons.h"
+#include "message.h"
 #include "background.h"
 #include "ball.h"
 #include "menu.h"
 #include "score_board.h"
 
 // default font to display
+extern const char* const GAME_FONT_FILE_PATH;
 #define FONT_FILE_PATH "./res/font/Junicode.ttf"
 // background music file path
+extern const char* const GAME_BACKGROUND_MUSIC_PATH;
 #define BACKGROUND_MUSIC_FILE_PATH "./res/sound/background_music.ogg"
+
 // button bitmaps
 #define BUTTON_PRESSED_BITMAP "./res/pics/button_pressed.png"
 #define BUTTON_RELEASED_BITMAP "./res/pics/button_released.png"
+
+// TODO
+// font size should be variable
+// as window size change font size also changes
 // font size
 #define LOADING_FONT_SIZE 36
 #define MOUSE_FONT_SIZE 12
 #define BUTTON_FONT_SIZE 16
+
+// TODO
+// music gain should be variable
 // music gain
 #define MUSIC_GAIN 1.6
+extern const double GAME_DEFAULT_MUSIC_GAIN;
+
+// TODO
+// menu mode should be define in menu.h
 // modes
 #define MENU_MODE 0
 #define GAME_MODE 1
+
 // hitting scaling constant
 // negative because ball moves the opposite way the mouse pull
 #define DELTA_SCALE -0.05
+
 // mouse coordinate position
 #define MOUSE_X_POSITION (WINDOW_WIDTH - 50)
 #define MOUSE_Y_POSITION (TABLE_Y_POSITION - 36)
@@ -68,29 +85,25 @@
 
 typedef struct game_t {
   // allegro essential elements
-  ALLEGRO_FONT *loading_font;
-  ALLEGRO_FONT *mouse_font;
-  ALLEGRO_FONT *button_font;
   ALLEGRO_DISPLAY *display;
   ALLEGRO_TIMER *timer;
   ALLEGRO_EVENT event;
+  ALLEGRO_FONT *loading_font;
+  ALLEGRO_FONT *mouse_font;
   ALLEGRO_EVENT_QUEUE *event_queue;
   ALLEGRO_SAMPLE *bg_music;
   ALLEGRO_SAMPLE_INSTANCE *bg_music_instance;
-  ALLEGRO_BITMAP *new_game_pressed;
-  ALLEGRO_BITMAP *new_game_released;
-  ALLEGRO_BITMAP *back_pressed;
-  ALLEGRO_BITMAP *back_released;
   // modules
   background *bg;
   billiard_ball *balls;
   menu *m;
   score_board *board;
-  // button pressed
-  bool ngbutton_pressed;
-  bool bbutton_pressed;
-  int button_sw;
-  int button_sh;
+  // current window width/height
+  uint32_t window_width, window_height;
+  // font size
+  uint32_t loading_font_size, mouse_font_size;
+  // music gain
+  double music_gain;
   // redendering
   bool redraw;
   // mouse coordinates
@@ -106,10 +119,9 @@ typedef struct game_t {
   double dx, dy;
 } game_t, game;
 
-
 bool main_init_allegro_library();
 game *main_init_game_object();
-
+void main_release_game_object(game *obj);
 
 // initialize all require library
 int init();
