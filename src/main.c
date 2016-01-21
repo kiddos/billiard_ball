@@ -1,5 +1,7 @@
 #include "main.h"
 
+/* constants */
+#define GAME_LOADING_TEXT "LOADING ..."
 // default font to display
 const char* const GAME_FONT_FILE_PATH = "./res/font/Junicode.ttf";
 // background music file path
@@ -7,9 +9,6 @@ const char* const GAME_BACKGROUND_MUSIC_PATH =
       "./res/sound/background_music.ogg";
 // music gain
 const double GAME_DEFAULT_MUSIC_GAIN = 1.6;
-
-#define GAME_LOADING_TEXT "LOADING ..."
-
 
 bool main_init_allegro_library() {
   /* allegro main library */
@@ -263,8 +262,6 @@ game *main_init_game_object() {
   }
   return g;
 }
-
-
 
 int main(int argc, char *argv[]) {
   // allegro essential elements
@@ -692,15 +689,15 @@ int main(int argc, char *argv[]) {
                 who_score_highest = get_who_score_higher_of_3(board);
 
 #ifdef DEBUG
-                printf("%d got %i", who_score_highest, 
+                printf("%d got %i", who_score_highest,
                     highest_score);
 #endif
-                save_score_to_config(board, 
+                save_score_to_config(board,
                     who_score_highest, highest_score);
 
                 // prompt the user to continue or not
-                result = al_show_native_message_box(display, 
-                    "3 Game Finished", who_win, 
+                result = al_show_native_message_box(display,
+                    "3 Game Finished", who_win,
                     "Do you want to Play it Again?",
                     NULL, ALLEGRO_MESSAGEBOX_OK_CANCEL);
 
@@ -849,7 +846,7 @@ int main(int argc, char *argv[]) {
         }
 
         // if the mouse press on the buttons
-        if(event.mouse.x > NGB_X_POS && 
+        if(event.mouse.x > NGB_X_POS &&
             event.mouse.x < NGB_X_POS + NGB_WIDTH &&
             event.mouse.y > NGB_Y_POS &&
             event.mouse.y < NGB_Y_POS + NGB_HEIGHT)
@@ -860,7 +857,7 @@ int main(int argc, char *argv[]) {
 
           ngbutton_pressed = true;
         }
-        if(event.mouse.x > BB_X_POS && 
+        if(event.mouse.x > BB_X_POS &&
             event.mouse.x < BB_X_POS + BB_WIDTH &&
             event.mouse.y > BB_Y_POS &&
             event.mouse.y < BB_Y_POS + BB_HEIGHT)
@@ -895,7 +892,7 @@ int main(int argc, char *argv[]) {
           dx = end_x - start_x;
           dy = end_y - start_y;
 
-          set_velocity_to_ball(balls, 0, 
+          set_velocity_to_ball(balls, 0,
               dx * DELTA_SCALE, dy * DELTA_SCALE);
 
           // clear the original status memory first
