@@ -1,7 +1,7 @@
-#pragma once
+#ifndef BALL_H
+#define BALL_H
 
 #include "commons.h"
-
 
 // config file path
 #define BILLIARD_BALL_CONFIG_FILE "./config/billiard_ball.config"
@@ -25,7 +25,6 @@
 #define WB_Y WHITE_BALL_DEFAULT_Y
 #define BC_SOUND_GAIN BALL_COLLISOION_SOUND_GAIN
 
-
 typedef struct billiard_ball_t
 {
 	int number, score, is_on_table;
@@ -35,7 +34,6 @@ typedef struct billiard_ball_t
 	ALLEGRO_SAMPLE *collision_sound;
 	ALLEGRO_COLOR color;
 } billiard_ball;
-
 
 billiard_ball *create_billiard_balls();
 void destroy_billiard_balls(billiard_ball *);
@@ -53,5 +51,5 @@ int *get_ball_status(billiard_ball *);
 void update_billiard_balls(billiard_ball *);
 void draw_billiard_balls(billiard_ball *);
 
-// end of billiard ball definition
+#endif /* end of include guard: BALL_H */
 
