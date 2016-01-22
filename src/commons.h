@@ -49,10 +49,17 @@ extern const double FPS;
 		TABLE_BORDER_WIDTH + BAG_RADIUS)
 #define VERTICAL_BORDER_END_Y (TABLE_Y_POSITION + \
 		TABLE_HEIGHT - TABLE_BORDER_WIDTH - BAG_RADIUS)
+
 // color definition
-#define COLOR_BLACK (al_map_rgb(0, 0, 0))
-#define COLOR_WHITE (al_map_rgb(255, 255, 255))
-#define COLOR_GREY (al_map_rgb(166, 166, 166))
+ALLEGRO_COLOR color_black();
+ALLEGRO_COLOR color_white();
+ALLEGRO_COLOR color_gray();
+ALLEGRO_COLOR color_red();
+ALLEGRO_COLOR color_orange();
+ALLEGRO_COLOR color_yellow();
+ALLEGRO_COLOR color_green();
+ALLEGRO_COLOR color_blue();
+ALLEGRO_COLOR color_purple();
 
 // redefine
 #define BALL_RADIUS BILLIARD_BALL_RADIUS
