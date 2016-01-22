@@ -6,16 +6,11 @@
 
 #include "commons.h"
 #include "message.h"
-#include "background.h"
-#include "ball.h"
-#include "menu.h"
-#include "score_board.h"
+#include "game.h"
 
 // default font to display
-extern const char* const GAME_FONT_FILE_PATH;
 #define FONT_FILE_PATH "./res/font/Junicode.ttf"
 // background music file path
-extern const char* const GAME_BACKGROUND_MUSIC_PATH;
 #define BACKGROUND_MUSIC_FILE_PATH "./res/sound/background_music.ogg"
 
 // button bitmaps
@@ -34,17 +29,8 @@ extern const char* const GAME_BACKGROUND_MUSIC_PATH;
 // music gain should be variable
 // music gain
 #define MUSIC_GAIN 1.6
-extern const double GAME_DEFAULT_MUSIC_GAIN;
 
-// TODO
-// menu mode should be define in menu.h
-// modes
-#define MENU_MODE 0
-#define GAME_MODE 1
 
-// hitting scaling constant
-// negative because ball moves the opposite way the mouse pull
-#define DELTA_SCALE -0.05
 
 // mouse coordinate position
 #define MOUSE_X_POSITION (WINDOW_WIDTH - 50)
@@ -83,55 +69,17 @@ extern const double GAME_DEFAULT_MUSIC_GAIN;
 #define MY MOUSE_Y_POSITION
 #define RL_WIDTH REFERENCE_LINE_WIDTH
 
-typedef struct game_t {
-  // allegro essential elements
-  ALLEGRO_DISPLAY *display;
-  ALLEGRO_TIMER *timer;
-  ALLEGRO_EVENT event;
-  ALLEGRO_FONT *loading_font;
-  ALLEGRO_FONT *mouse_font;
-  ALLEGRO_EVENT_QUEUE *event_queue;
-  ALLEGRO_SAMPLE *bg_music;
-  ALLEGRO_SAMPLE_INSTANCE *bg_music_instance;
-  // modules
-  background *bg;
-  billiard_ball *balls;
-  menu *m;
-  score_board *board;
-  // current window width/height
-  uint32_t window_width, window_height;
-  // font size
-  uint32_t loading_font_size, mouse_font_size;
-  // music gain
-  double music_gain;
-  // redendering
-  bool redraw;
-  // mouse coordinates
-  int mx, my;
-  // hitting the ball
-  bool is_ready_to_hit;
-  bool is_ball_hitted;
-  bool should_change_turn;
-  int *ball_original_status;
-  int *ball_new_status;
-  int highest_score, who_score_highest;
-  int start_x, start_y, end_x, end_y;
-  double dx, dy;
-} game_t, game;
-
+/* init allegro library */
 bool main_init_allegro_library();
-game *main_init_game_object();
-void main_release_game_object(game *obj);
-
-// initialize all require library
-int init();
-// draw mouse coordinates
-void draw_mouse_coordinates(const int, const int, const ALLEGRO_FONT *);
-// draw the reference line for ball hitting
-void draw_referencing_line(const int, const int, const int, const int);
-// void *playing_music(ALLEGRO_THREAD *, void *);
-
-
+/* close allegro library */
+void main_close_allegro_library();
+void draw_mouse_coordinates(const int mx,
+                            const int my,
+                            const ALLEGRO_FONT *font);
+void draw_referencing_line(const int sx,
+                           const int sy,
+                           const int cx,
+                           const int cy);
 
 #endif /* end of include guard: MAIN_H */
 
