@@ -8,6 +8,43 @@ const double DEFAULT_WINDOW_WIDTH = 800;
 const double DEFAULT_WINDOW_HEIGHT = 600;
 const double FPS = 66.0;
 
+/* color function */
+ALLEGRO_COLOR color_black() {
+  return al_map_rgb(0, 0, 0);
+}
+
+ALLEGRO_COLOR color_white() {
+  return al_map_rgb(250, 250, 250);
+}
+
+ALLEGRO_COLOR color_gray() {
+  return al_map_rgb(166, 166, 166);
+}
+
+ALLEGRO_COLOR color_red() {
+  return al_map_rgb(246, 74, 74);
+}
+
+ALLEGRO_COLOR color_orange() {
+  return al_map_rgb(255, 147, 51);
+}
+
+ALLEGRO_COLOR color_yellow() {
+  return al_map_rgb(240, 228, 67);
+}
+
+ALLEGRO_COLOR color_green() {
+  return al_map_rgb(71, 208, 56);
+}
+
+ALLEGRO_COLOR color_blue() {
+  return al_map_rgb(56, 124, 208);
+}
+
+ALLEGRO_COLOR color_purple() {
+  return al_map_rgb(195, 86, 217);
+}
+
 /* basic type */
 point point_init(double x, double y, double z) {
   point p;
