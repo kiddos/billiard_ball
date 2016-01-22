@@ -9,7 +9,7 @@ const double GAME_DEFAULT_MUSIC_GAIN = 1.6;
 const uint32_t GAME_DEFAULT_MOUSE_FONT_SIZE = 12;
 const uint32_t GAME_DEFAULT_LOADING_FONT_SIZE = 36;
 
-game *game_init_object() {
+game *game_init() {
   game *g = malloc(sizeof(game));
 
   // default pointers null
@@ -226,49 +226,50 @@ game *game_init_object() {
   return g;
 }
 
-void game_release_object(game *obj) {
-  if (obj) {
-    if (obj->loading_font) {
+void game_destroy(game *g) {
+  if (g) {
+    if (g->loading_font) {
       regular_message("release game loading font");
-      al_destroy_font(obj->loading_font);
+      al_destroy_font(g->loading_font);
     }
-    if (obj->mouse_font) {
+    if (g->mouse_font) {
       regular_message("release game mouse font");
-      al_destroy_font(obj->mouse_font);
+      al_destroy_font(g->mouse_font);
     }
-    if (obj->display) {
+    if (g->display) {
       regular_message("release game display");
-      al_destroy_display(obj->display);
+      al_destroy_display(g->display);
     }
-    if (obj->timer) {
+    if (g->timer) {
       regular_message("release game timer");
-      al_destroy_timer(obj->timer);
+      al_destroy_timer(g->timer);
     }
-    if (obj->event_queue) {
+    if (g->event_queue) {
       regular_message("release game event queue");
-      al_destroy_event_queue(obj->event_queue);
+      al_destroy_event_queue(g->event_queue);
     }
-    if (obj->bg_music) {
+    if (g->bg_music) {
       regular_message("release game background music");
-      al_destroy_sample(obj->bg_music);
+      al_destroy_sample(g->bg_music);
     }
-    if (obj->bg) {
+    if (g->bg) {
       regular_message("release game background module");
-      destroy_background(obj->bg);
+      destroy_background(g->bg);
     }
-    if (obj->balls) {
+    if (g->balls) {
       regular_message("release game ball module");
-      destroy_billiard_balls(obj->balls);
+      destroy_billiard_balls(g->balls);
     }
-    if (obj->m) {
+    if (g->m) {
       regular_message("release game menu");
-      destroy_menu(obj->m);
+      destroy_menu(g->m);
     }
-    if (obj->board) {
+    if (g->board) {
       regular_message("release game score board");
-      destroy_score_board(obj->board);
+      destroy_score_board(g->board);
     }
   }
+  free(g);
 }
 
 void game_prepare(game *g) {
