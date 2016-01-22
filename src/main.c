@@ -825,12 +825,6 @@ void main_close_allegro_library() {
   regular_message("shutdown image addon");
   al_shutdown_image_addon();
 
-  regular_message("shutdown ttf addon");
-  al_shutdown_ttf_addon();
-
-  regular_message("shutdown font addon");
-  al_shutdown_font_addon();
-
   regular_message("uninstall audio");
   al_uninstall_audio();
 
