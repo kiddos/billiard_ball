@@ -3,7 +3,7 @@ set(ALLEGRO_LIBRARY
     -lallegro_image -lallegro_dialog -lallegro_primitives -lm -fopenmp)
 
 set(PROJECT_SRC background.c ball.c main.c menu.c score_board.c commons.c
-    game.c message.c)
+    game.c message.c button.c cue.c)
 
 set(PROJECT_FLAGS "-O3 -Wall -g -DDEBUG")
 
