@@ -10,6 +10,7 @@ typedef enum {
 
 typedef struct button_t {
   ALLEGRO_BITMAP *pressed_bitmap, *release_bitmap;
+  ALLEGRO_FONT *text_font;
   ALLEGRO_COLOR text_color;
   bool with_text;
   bool is_pressed;
