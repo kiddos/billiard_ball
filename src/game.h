@@ -26,8 +26,7 @@ typedef struct game_t {
   // allegro essential elements
   ALLEGRO_DISPLAY *display;
   ALLEGRO_TIMER *timer;
-  ALLEGRO_FONT *loading_font;
-  ALLEGRO_FONT *mouse_font;
+  ALLEGRO_FONT *loading_font, *mouse_font;
   ALLEGRO_EVENT_QUEUE *event_queue;
   ALLEGRO_SAMPLE *bg_music;
   ALLEGRO_SAMPLE_INSTANCE *bg_music_instance;
@@ -42,10 +41,8 @@ typedef struct game_t {
   uint32_t loading_font_size, mouse_font_size;
   // music gain
   double music_gain;
-  // game running
-  bool running;
-  // redendering
-  bool redraw;
+  // game running and drawing
+  bool running, redraw;
   // mouse coordinates
   int mx, my;
   // hitting the ball
