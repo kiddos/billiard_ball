@@ -9,21 +9,24 @@ const double GAME_DEFAULT_MUSIC_GAIN = 1.6;
 const uint32_t GAME_DEFAULT_MOUSE_FONT_SIZE = 12;
 const uint32_t GAME_DEFAULT_LOADING_FONT_SIZE = 36;
 
-game *game_init() {
+game * game_init() {
   game *g = malloc(sizeof(game));
 
   // default pointers null
-  g->display = NULL;
-  g->timer = NULL;
+  g->core.display = NULL;
+  g->core.timer = NULL;
+  g->core.event_queue = NULL;
   g->loading_font = NULL;
   g->mouse_font = NULL;
-  g->event_queue = NULL;
   g->bg_music = NULL;
   g->bg_music_instance = NULL;
-  g->bg = NULL;
-  g->balls = NULL;
-  g->m = NULL;
-  g->board = NULL;
+
+  g->module.bg = NULL;
+  g->module.balls = NULL;
+  g->module.m = NULL;
+  g->module.board = NULL;
+  g->module.new_game_button = NULL;
+  g->module.back_return_button = NULL;
   g->ball_original_status = NULL;
   g->ball_new_status = NULL;
 
@@ -60,14 +63,14 @@ game *game_init() {
                            ALLEGRO_OPENGL);
 
   // game display
-  g->display = al_create_display(g->window_width, g->window_height);
-  if (!g->display) {
+  g->core.display = al_create_display(g->window_width, g->window_height);
+  if (!g->core.display) {
     error_message("fail to create allegro display");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
     return NULL;
   }
-  al_acknowledge_resize(g->display);
+  al_acknowledge_resize(g->core.display);
 
   // after game display is prepare
   // draw the loading text to screen
@@ -81,23 +84,23 @@ game *game_init() {
   // and load the rest of the objects
 
   // timer object
-  g->timer = al_create_timer(1.0 / FPS);
-  if (!g->timer) {
+  g->core.timer = al_create_timer(1.0 / FPS);
+  if (!g->core.timer) {
     error_message("fail to create allegro timer");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
+    al_destroy_display(g->core.display);
     return NULL;
   }
 
   // event queue
-  g->event_queue = al_create_event_queue();
-  if (!g->event_queue) {
+  g->core.event_queue = al_create_event_queue();
+  if (!g->core.event_queue) {
     error_message("fail to create allegro event queue");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
     return NULL;
   }
 
@@ -107,9 +110,9 @@ game *game_init() {
     error_message("fail to load background music");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     return NULL;
   }
   g->bg_music_instance = al_create_sample_instance(g->bg_music);
@@ -117,9 +120,9 @@ game *game_init() {
     error_message("fail to load background music instance");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     return NULL;
   }
@@ -128,9 +131,9 @@ game *game_init() {
     error_message("fail to set background music playmode to loop");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
     return NULL;
@@ -140,9 +143,9 @@ game *game_init() {
     error_message("fail to set background music volume");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
     return NULL;
@@ -153,9 +156,9 @@ game *game_init() {
     error_message("fail to attach background music to mixer");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
     return NULL;
@@ -163,64 +166,64 @@ game *game_init() {
 
   /* modules */
   // background module
-  g->bg = create_background();
-  if (!g->bg) {
+  g->module.bg = create_background();
+  if (!g->module.bg) {
     error_message("fail to create background");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
     return NULL;
   }
 
   // billiard balls module
-  g->balls = create_billiard_balls();
-  if (!g->balls) {
+  g->module.balls = create_billiard_balls();
+  if (!g->module.balls) {
     perror("fail to create billiard balls");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->bg);
+    destroy_background(g->module.bg);
     return NULL;
   }
 
   // menu module
-  g->m = create_menu();
-  if (!g->m) {
+  g->module.m = create_menu();
+  if (!g->module.m) {
     error_message("fail to create menu");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->bg);
-    destroy_billiard_balls(g->balls);
+    destroy_background(g->module.bg);
+    destroy_billiard_balls(g->module.balls);
     return NULL;
   }
 
   // score board module
-  g->board = create_score_board();
-  if (!g->board) {
+  g->module.board = create_score_board();
+  if (!g->module.board) {
     error_message("fail to create menu");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->bg);
-    destroy_billiard_balls(g->balls);
-    destroy_menu(g->m);
+    destroy_background(g->module.bg);
+    destroy_billiard_balls(g->module.balls);
+    destroy_menu(g->module.m);
     return NULL;
   }
   return g;
@@ -236,37 +239,37 @@ void game_destroy(game *g) {
       regular_message("release game mouse font");
       al_destroy_font(g->mouse_font);
     }
-    if (g->display) {
+    if (g->core.display) {
       regular_message("release game display");
-      al_destroy_display(g->display);
+      al_destroy_display(g->core.display);
     }
-    if (g->timer) {
+    if (g->core.timer) {
       regular_message("release game timer");
-      al_destroy_timer(g->timer);
+      al_destroy_timer(g->core.timer);
     }
-    if (g->event_queue) {
+    if (g->core.event_queue) {
       regular_message("release game event queue");
-      al_destroy_event_queue(g->event_queue);
+      al_destroy_event_queue(g->core.event_queue);
     }
     if (g->bg_music) {
       regular_message("release game background music");
       al_destroy_sample(g->bg_music);
     }
-    if (g->bg) {
+    if (g->module.bg) {
       regular_message("release game background module");
-      destroy_background(g->bg);
+      destroy_background(g->module.bg);
     }
-    if (g->balls) {
+    if (g->module.balls) {
       regular_message("release game ball module");
-      destroy_billiard_balls(g->balls);
+      destroy_billiard_balls(g->module.balls);
     }
-    if (g->m) {
+    if (g->module.m) {
       regular_message("release game menu");
-      destroy_menu(g->m);
+      destroy_menu(g->module.m);
     }
-    if (g->board) {
+    if (g->module.board) {
       regular_message("release game score board");
-      destroy_score_board(g->board);
+      destroy_score_board(g->module.board);
     }
   }
   free(g);
@@ -274,19 +277,19 @@ void game_destroy(game *g) {
 
 void game_prepare(game *g) {
   // register event source
-  al_register_event_source(g->event_queue,
-                           al_get_display_event_source(g->display));
-  al_register_event_source(g->event_queue,
+  al_register_event_source(g->core.event_queue,
+                           al_get_display_event_source(g->core.display));
+  al_register_event_source(g->core.event_queue,
                            al_get_mouse_event_source());
-  al_register_event_source(g->event_queue,
+  al_register_event_source(g->core.event_queue,
                            al_get_keyboard_event_source());
-  al_register_event_source(g->event_queue,
-                           al_get_timer_event_source(g->timer));
+  al_register_event_source(g->core.event_queue,
+                           al_get_timer_event_source(g->core.timer));
 
   // start the background music
   al_play_sample_instance(g->bg_music_instance);
   // start timer
-  al_start_timer(g->timer);
+  al_start_timer(g->core.timer);
 
   // game running
   g->running = true;
@@ -346,23 +349,23 @@ void game_main_loop(game *g) {
   ALLEGRO_EVENT event;
   while (g->running) {
     // listen to event
-    al_wait_for_event(g->event_queue, &event);
+    al_wait_for_event(g->core.event_queue, &event);
     if (event.type == ALLEGRO_EVENT_TIMER) {
       g->redraw = true;
 
-      switch (g->m->mode) {
+      switch (g->module.m->mode) {
         case MENU_MODE:
           break;
         case GAME_MODE:
-          update_billiard_balls(g->balls);
+          update_billiard_balls(g->module.balls);
 
           // if the balls are moving
           // due to user input
-          if (g->is_ball_hitted && is_all_ball_stopped(g->balls) &&
+          if (g->is_ball_hitted && is_all_ball_stopped(g->module.balls) &&
               g->ball_original_status != NULL) {
             // printf("checking status\n");
             g->should_change_turn = true;
-            g->ball_new_status = get_ball_status(g->balls);
+            g->ball_new_status = get_ball_status(g->module.balls);
             for (i = 0 ; i < BALL_COUNT ; i ++) {
               if (g->ball_original_status[i] > g->ball_new_status[i]) {
                 // if the ball this player hitted in
@@ -371,50 +374,51 @@ void game_main_loop(game *g) {
                 if (i == 0) {
                   // set the white ball to default location
                   // cx = 600, cy = 400
-                  g->balls[0].cx = WB_X;
-                  g->balls[0].cy = WB_Y;
-                  g->balls[0].is_on_table = 1;
+                  g->module.balls[0].cx = WB_X;
+                  g->module.balls[0].cy = WB_Y;
+                  g->module.balls[0].is_on_table = 1;
                   // printf("resetting white ball\n");
                 } else {
                   g->should_change_turn = false;
                 }
-                add_score_to_score_board(g->board, g->balls[i].score);
+                add_score_to_score_board(g->module.board,
+                                         g->module.balls[i].score);
               }
             }
 
             // if all ball(except white ball) are all in bags
             // this game is done
-            if (is_all_ball_in_bag(g->balls)) {
-              if (get_who_win(g->board) == SB_P1_TURN) {
+            if (is_all_ball_in_bag(g->module.balls)) {
+              if (get_who_win(g->module.board) == SB_P1_TURN) {
                 regular_message("player 1 wins");
-              } else if (get_who_win(g->board) == SB_P2_TURN) {
+              } else if (get_who_win(g->module.board) == SB_P2_TURN) {
                 regular_message("player 2 wins");
-              } else if (get_who_win(g->board) == SB_DRAW) {
+              } else if (get_who_win(g->module.board) == SB_DRAW) {
                 regular_message("draw");
               }
 
-              record_score(g->board);
-              reset_billiard_balls(g->balls);
+              record_score(g->module.board);
+              reset_billiard_balls(g->module.balls);
 
-              if (get_round(g->board) == MAX_GAME_NUM) {
-                g->highest_score = get_highest_player_score_of_3(g->board);
-                g->who_score_highest = get_who_score_higher_of_3(g->board);
+              if (get_round(g->module.board) == MAX_GAME_NUM) {
+                g->highest_score = get_highest_player_score_of_3(g->module.board);
+                g->who_score_highest = get_who_score_higher_of_3(g->module.board);
 
                 printf("%d got %i", g->who_score_highest,
                     g->highest_score);
-                save_score_to_config(g->board,
+                save_score_to_config(g->module.board,
                     g->who_score_highest, g->highest_score);
 
                 // TODO
                 // prompt the user to continue or not
 
                 if (result != 1) {
-                  g->m->mode = MENU_MODE;
-                  set_menu_mode(g->m, DEFAULT_MENU_MODE);
+                  g->module.m->mode = MENU_MODE;
+                  set_menu_mode(g->module.m, DEFAULT_MENU_MODE);
                 }
 
-                reset_billiard_balls(g->balls);
-                reset_score_board(g->board);
+                reset_billiard_balls(g->module.balls);
+                reset_score_board(g->module.board);
               }
             } else {
               // check if its necessary to change turn
@@ -424,7 +428,7 @@ void game_main_loop(game *g) {
               if (g->should_change_turn ||
                   g->ball_original_status[0] > g->ball_new_status[0]) {
                 regular_message("change turn");
-                change_turn(g->board);
+                change_turn(g->module.board);
               }
             }
 
@@ -445,7 +449,7 @@ void game_main_loop(game *g) {
           break;
       }
     } else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-      result = al_show_native_message_box(g->display,
+      result = al_show_native_message_box(g->core.display,
           "Quit?", "Quit?", "Are you sure you want to Quit?",
           NULL, ALLEGRO_MESSAGEBOX_OK_CANCEL);
       // if the result code == 1
@@ -455,33 +459,33 @@ void game_main_loop(game *g) {
         break;
       }
     } else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-      if (g->m->mode == MENU_MODE) {
-        int current_selection = get_menu_selection(g->m);
+      if (g->module.m->mode == MENU_MODE) {
+        int current_selection = get_menu_selection(g->module.m);
         switch (event.keyboard.keycode) {
           case ALLEGRO_KEY_UP:
             if (current_selection > PLAY_MENU_SELECTION) {
-              set_menu_selection(g->m, current_selection - 1);
+              set_menu_selection(g->module.m, current_selection - 1);
             }
             break;
           case ALLEGRO_KEY_DOWN:
             if (current_selection < EXIT_MENU_SELECTION) {
-              set_menu_selection(g->m, current_selection + 1);
+              set_menu_selection(g->module.m, current_selection + 1);
             }
             break;
           case ALLEGRO_KEY_ENTER:
             if (current_selection == PLAY_MENU_SELECTION) {
-              g->m->mode = GAME_MODE;
+              g->module.m->mode = GAME_MODE;
             } else if (current_selection == RULE_MENU_SELECTION) {
-              if (get_menu_mode(g->m) != RULE_MODE) {
-                set_menu_mode(g->m, RULE_MODE);
-              } else if (get_menu_mode(g->m) == RULE_MODE) {
-                set_menu_mode(g->m, DEFAULT_MENU_MODE);
+              if (get_menu_mode(g->module.m) != RULE_MODE) {
+                set_menu_mode(g->module.m, RULE_MODE);
+              } else if (get_menu_mode(g->module.m) == RULE_MODE) {
+                set_menu_mode(g->module.m, DEFAULT_MENU_MODE);
               }
             } else if (current_selection == SCORE_MENU_SELECTION) {
-              if (get_menu_mode(g->m) != SCORE_MODE) {
-                set_menu_mode(g->m, SCORE_MODE);
-              } else if (get_menu_mode(g->m) == SCORE_MODE) {
-                set_menu_mode(g->m, DEFAULT_MENU_MODE);
+              if (get_menu_mode(g->module.m) != SCORE_MODE) {
+                set_menu_mode(g->module.m, SCORE_MODE);
+              } else if (get_menu_mode(g->module.m) == SCORE_MODE) {
+                set_menu_mode(g->module.m, DEFAULT_MENU_MODE);
               }
             } else if (current_selection == EXIT_MENU_SELECTION) {
               g->running = false;
@@ -491,17 +495,17 @@ void game_main_loop(game *g) {
       }
     } else if (event.type == ALLEGRO_EVENT_MOUSE_AXES ||
                event.type == ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY) {
-      if (g->m->mode == GAME_MODE) {
+      if (g->module.m->mode == GAME_MODE) {
         g->mx = event.mouse.x;
         g->my = event.mouse.y;
       }
     } else if (event.type == ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY) {
-      if (g->m->mode == GAME_MODE) {
+      if (g->module.m->mode == GAME_MODE) {
         g->is_ready_to_hit = false;
       }
     } else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-      if (g->m->mode == GAME_MODE) {
-        if (is_mouse_on_ball(g->balls[0], g->mx, g->my)) {
+      if (g->module.m->mode == GAME_MODE) {
+        if (is_mouse_on_ball(g->module.balls[0], g->mx, g->my)) {
           g->start_x = event.mouse.x;
           g->start_y = event.mouse.y;
 
@@ -538,12 +542,12 @@ void game_main_loop(game *g) {
 
       }
     } else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
-      if (g->m->mode == MENU_MODE) {
+      if (g->module.m->mode == MENU_MODE) {
 
-      } else if (g->m->mode == GAME_MODE) {
+      } else if (g->module.m->mode == GAME_MODE) {
         // if the mouse is not on the ball after the dragging
         // its ready to shoot the ball
-        if (!is_mouse_on_ball(g->balls[0], event.mouse.x, event.mouse.y) &&
+        if (!is_mouse_on_ball(g->module.balls[0], event.mouse.x, event.mouse.y) &&
             g->is_ready_to_hit) {
           g->end_x = event.mouse.x;
           g->end_y = event.mouse.y;
@@ -551,7 +555,7 @@ void game_main_loop(game *g) {
           g->dx = g->end_x - g->start_x;
           g->dy = g->end_y - g->start_y;
 
-          set_velocity_to_ball(g->balls, 0,
+          set_velocity_to_ball(g->module.balls, 0,
                                g->dx * BALL_DELTA_SCALE,
                                g->dy * BALL_DELTA_SCALE);
 
@@ -562,7 +566,7 @@ void game_main_loop(game *g) {
             g->ball_original_status = NULL;
           }
 
-          g->ball_original_status = get_ball_status(g->balls);
+          g->ball_original_status = get_ball_status(g->module.balls);
 
           // after the velocity is set
           // balls are moving
@@ -572,21 +576,21 @@ void game_main_loop(game *g) {
       }
     }
 
-    if (g->redraw && al_is_event_queue_empty(g->event_queue)) {
+    if (g->redraw && al_is_event_queue_empty(g->core.event_queue)) {
       // clear the screen to black
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
-      switch (g->m->mode) {
+      switch (g->module.m->mode) {
         case MENU_MODE:
-          draw_menu(g->m);
+          draw_menu(g->module.m);
           break;
         case GAME_MODE:
           // drawings
 
           // draw the background first
-          draw_background(g->bg);
+          draw_background(g->module.bg);
           // draw the score board
-          draw_score_board(g->board);
+          draw_score_board(g->module.board);
 
           // TODO
           // draw 2 buttons
@@ -595,10 +599,11 @@ void game_main_loop(game *g) {
           draw_mouse_coordinates(g->mx, g->my, g->mouse_font);
 
           if (g->is_ready_to_hit)
-            draw_referencing_line(g->balls[0].cx, g->balls[0].cy,
+            draw_referencing_line(g->module.balls[0].cx,
+                                  g->module.balls[0].cy,
                                   g->mx, g->my);
 
-          draw_billiard_balls(g->balls);
+          draw_billiard_balls(g->module.balls);
           break;
       }
 

@@ -9,6 +9,7 @@
 #include "ball.h"
 #include "menu.h"
 #include "score_board.h"
+#include "button.h"
 
 /* constants */
 extern const char* const GAME_BACKGROUND_MUSIC_PATH;
@@ -24,17 +25,22 @@ typedef enum {
 
 typedef struct game_t {
   // allegro essential elements
-  ALLEGRO_DISPLAY *display;
-  ALLEGRO_TIMER *timer;
+  union {
+    ALLEGRO_DISPLAY *display;
+    ALLEGRO_TIMER *timer;
+    ALLEGRO_EVENT_QUEUE *event_queue;
+  } core;
   ALLEGRO_FONT *loading_font, *mouse_font;
-  ALLEGRO_EVENT_QUEUE *event_queue;
   ALLEGRO_SAMPLE *bg_music;
   ALLEGRO_SAMPLE_INSTANCE *bg_music_instance;
   // modules
-  background *bg;
-  billiard_ball *balls;
-  menu *m;
-  score_board *board;
+  struct {
+    background *bg;
+    billiard_ball *balls;
+    menu *m;
+    score_board *board;
+    button *new_game_button, *back_return_button;
+  } module;
   // current window width/height
   uint32_t window_width, window_height;
   // font size
