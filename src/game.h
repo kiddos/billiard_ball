@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <allegro5/allegro_native_dialog.h>
+
 #include "commons.h"
 #include "message.h"
 #include "background.h"
@@ -15,11 +17,15 @@ extern const double GAME_DEFAULT_MUSIC_GAIN;
 extern const uint32_t GAME_DEFAULT_MOUSE_FONT_SIZE;
 extern const uint32_t GAME_DEFAULT_LOADING_FONT_SIZE;
 
+typedef enum {
+  MENU_MODE,
+  GAME_MODE
+} mode;
+
 typedef struct game_t {
   // allegro essential elements
   ALLEGRO_DISPLAY *display;
   ALLEGRO_TIMER *timer;
-  ALLEGRO_EVENT event;
   ALLEGRO_FONT *loading_font;
   ALLEGRO_FONT *mouse_font;
   ALLEGRO_EVENT_QUEUE *event_queue;
@@ -36,6 +42,8 @@ typedef struct game_t {
   uint32_t loading_font_size, mouse_font_size;
   // music gain
   double music_gain;
+  // game running
+  bool running;
   // redendering
   bool redraw;
   // mouse coordinates
