@@ -70,4 +70,27 @@ extern const double FPS;
 #define VB_SY VERTICAL_BORDER_START_Y
 #define VB_EY VERTICAL_BORDER_END_Y
 
+typedef struct point_t {
+  double x, y, z;
+} point, point_t;
+
+typedef struct rect_t {
+  double x, y, z;
+  double width, height, depth;
+} rect, rect_t;
+
+point point_init(double x, double y, double z);
+double point_get_x(point p);
+double point_get_y(point p);
+double point_get_z(point p);
+
+rect rect_init(double x, double y, double z,
+               double w, double h, double d);
+double rect_get_x(rect r);
+double rect_get_y(rect r);
+double rect_get_z(rect r);
+double rect_get_w(rect r);
+double rect_get_h(rect r);
+double rect_get_d(rect r);
+
 #endif /* end of include guard: COMMONS_H */
