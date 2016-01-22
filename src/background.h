@@ -1,11 +1,9 @@
-#pragma once
+#ifndef BACKGROUND_H
+#define BACKGROUND_H
 
 #include "commons.h"
 
-
-#define BACKGROUND_CONFIG_FILE_PATH "./config/background.config"
-#define BG_CONFIG_FPATH BACKGROUND_CONFIG_FILE_PATH
-
+extern const char* const BACKGROUND_CONFIG_FILE_PATH;
 
 typedef struct background_t
 {
@@ -16,8 +14,8 @@ typedef struct background_t
 
 
 background *create_background();
-void destroy_background(background *); 
+void destroy_background(background *);
 void draw_background(background *);
 
-// end of background definition
+#endif /* end of include guard: BACKGROUND_H */
 
