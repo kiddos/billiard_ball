@@ -1,5 +1,11 @@
 #include "message.h"
 
+#if defined(__unix__)
+#define WARNING_COLOR "\033[0;31m"
+#define ERROR_COLOR "\033[0;33m"
+#define RESET "\033[0m"
+#endif
+
 void regular_message(const char* msg) {
 #ifdef DEBUG
   time_t current_time;
@@ -16,12 +22,44 @@ void regular_message(const char* msg) {
 
 void warning_message(const char* msg) {
 #ifdef DEBUG
-  fprintf(stdout, "WARNING: %s\n", msg);
+  time_t current_time;
+  struct tm *timeinfo;
+  char time_str[128];
+
+  time(&current_time);
+  timeinfo = localtime(&current_time);
+  strftime(time_str, 128, "%A %B %d %Y %X", timeinfo);
+
+  #if defined(__unix__)
+    fprintf(stdout, WARNING_COLOR"[%s]: WARNING: %s\n", time_str, msg);
+    fprintf(stdout, RESET"");
+  #else
+    fprintf(stdout, "WARNING: %s %s\n", msg);
+  #endif
 #endif
 }
 
 void error_message(const char* msg) {
 #ifdef DEBUG
-  fprintf(stderr, "ERROR: %s\n", msg);
+  time_t current_time;
+  struct tm *timeinfo;
+  char time_str[128];
+
+  time(&current_time);
+  timeinfo = localtime(&current_time);
+  strftime(time_str, 128, "%A %B %d %Y %X", timeinfo);
+
+  #if defined(__unix__)
+    fprintf(stderr, ERROR_COLOR"[%s]: ERROR: %s\n", time_str, msg);
+    fprintf(stdout, RESET"");
+  #else
+    fprintf(stdout, "WARNING: %s %s\n", msg);
+  #endif
 #endif
 }
+
+#if defined(__unix__)
+#undef WARNING_COLOR
+#undef ERROR_COLOR
+#undef RESET
+#endif
