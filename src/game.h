@@ -59,8 +59,8 @@ typedef struct game_t {
   double dx, dy;
 } game_t, game;
 
-game *game_init_object();
-void game_release_object(game *obj);
+game *game_init();
+void game_destroy(game *g);
 void game_prepare(game *g);
 void game_main_loop(game *g);
 
