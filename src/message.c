@@ -2,7 +2,15 @@
 
 void regular_message(const char* msg) {
 #ifdef DEBUG
-  fprintf(stdout, "%s\n", msg);
+  time_t current_time;
+  struct tm *timeinfo;
+  char time_str[128];
+
+  time(&current_time);
+  timeinfo = localtime(&current_time);
+  strftime(time_str, 128, "%A %B %d %Y %X", timeinfo);
+
+  fprintf(stdout, "[%s]: %s\n", time_str, msg);
 #endif
 }
 
