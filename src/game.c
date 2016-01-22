@@ -551,8 +551,8 @@ void game_main_loop(game *g) {
           g->dy = g->end_y - g->start_y;
 
           set_velocity_to_ball(g->balls, 0,
-                               g->dx * DELTA_SCALE,
-                               g->dy * DELTA_SCALE);
+                               g->dx * BALL_DELTA_SCALE,
+                               g->dy * BALL_DELTA_SCALE);
 
           // clear the original status memory first
           // get the original status
