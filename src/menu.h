@@ -1,7 +1,7 @@
-#pragma once
+#ifndef MENU_H
+#define MENU_H
 
 #include "commons.h"
-
 
 // PATH
 #define MENU_FONT_FILE_PATH "./res/font/Junicode.ttf"
@@ -51,8 +51,6 @@
 #define ST_SY SCORE_TEXT_START_Y_POSITION
 #define ST_Y_MARG SCORE_TEXT_Y_MARGIN
 
-
-
 typedef struct menu_t
 {
 	int selection;
@@ -65,7 +63,6 @@ typedef struct menu_t
 	ALLEGRO_BITMAP *menu_bg;
 } menu;
 
-
 menu *create_menu();
 void destroy_menu(menu *);
 void load_menu_score_entries(menu *);
@@ -75,5 +72,5 @@ int get_menu_mode(menu *);
 void set_menu_mode(menu *, const int);
 int get_menu_selection(menu *);
 
-// end of menu definition
+#endif /* end of include guard: MENU_H */
 
