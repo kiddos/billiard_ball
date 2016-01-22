@@ -58,20 +58,14 @@ menu *create_menu()
 	m->rules[m->nrules-1][n] = '\0';
 	fclose(rule_file);
 
-#ifdef DEBUG
-	printf("finished loading rule text.\n");
-#endif
+	regular_message("finished loading rule text");
 
 	// read the score entries
-#ifdef DEBUG
-	printf("loading score entries...\n");
-#endif
+	regular_message("loading score entries...");
 
 	load_menu_score_entries(m);
 
-#ifdef DEBUG
-	printf("finished loading score entries.\n");
-#endif
+	regular_message("finished loading score entries");
 
 	// load menu font
 	m->title_text_font = al_load_font(MENU_FONT_FPATH, 36, ALLEGRO_TTF_NO_KERNING);
