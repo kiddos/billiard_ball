@@ -104,18 +104,44 @@ button *button_init_without_text(rect r,
 }
 
 void button_destroy(button *b) {
-
+  if (b != NULL) {
+    if (b->pressed_bitmap) {
+      al_destroy_bitmap(b->pressed_bitmap);
+    }
+    if (b->release_bitmap) {
+      al_destroy_bitmap(b->release_bitmap);
+    }
+    if (b->hover_bitmap) {
+      al_destroy_bitmap(b->hover_bitmap);
+    }
+  }
+  free(b);
 }
 
 bool button_is_pressed(button* b) {
-
+  return b->is_pressed;
 }
 
-void button_update(button *b, point mouse, uint64_t time_stamp) {
+void button_update(button *b, point mouse, bool mouse_pressed) {
+  const double mx = mouse.x;
+  const double my = mouse.y;
 
+  if (mx >= b->sx && mx <= b->sx + b->width &&
+      my >= b->sy && my <= b->sy + b->height) {
+    if (mouse_pressed) {
+      b->is_pressed = true;
+    }
+    b->is_hovered = true;
+  }
 }
 
 void button_draw(button *b) {
-
+  if (b->is_pressed) {
+    al_draw_bitmap(b->pressed_bitmap, b->sx, b->sy, 0);
+  } else if (b->is_hovered) {
+    al_draw_bitmap(b->hover_bitmap, b->sx, b->sy, 0);
+  } else {
+    al_draw_bitmap(b->release_bitmap, b->sx, b->sy, 0);
+  }
 }
 
