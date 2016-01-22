@@ -1,5 +1,8 @@
 #include "ball.h"
 
+/* constants */
+const double BALL_DELTA_SCALE = -0.05;
+
 billiard_ball *create_billiard_balls()
 {
 	int i;
@@ -7,7 +10,7 @@ billiard_ball *create_billiard_balls()
 	char key[key_size];
 	billiard_ball *balls = malloc(sizeof(billiard_ball) * BALL_COUNT);
 	ALLEGRO_CONFIG *config = al_load_config_file(BCONFIG_FPATH);
-	
+
 	if(!balls)
 	{
 		perror("fail to malloc for billiard balls");
@@ -89,7 +92,7 @@ billiard_ball *create_billiard_balls()
 
 	balls[3].cx = balls[1].cx - 2 * BILLIARD_BALL_RADIUS * cos(PI / 6);
 	balls[3].cy = balls[1].cy + 2 * BILLIARD_BALL_RADIUS * sin(PI / 6);
-	
+
 	for(i = 4 ; i <= 6 ; i ++)
 		balls[i].cx = balls[1].cx - 4 * BILLIARD_BALL_RADIUS * cos(PI / 6);
 	balls[4].cy = balls[1].cy - 2 * BILLIARD_BALL_RADIUS;
@@ -101,7 +104,6 @@ billiard_ball *create_billiard_balls()
 		balls[i].cx = balls[i - 5].cx - 4 * BILLIARD_BALL_RADIUS * cos(PI / 6);
 		balls[i].cy = balls[i - 5].cy;
 	}
-	
 	*/
 	// destroy the config file handler
 	al_destroy_config(config);
@@ -130,7 +132,7 @@ void reset_billiard_balls(billiard_ball *balls)
 	const int key_size = 256;
 	char key[key_size];
 	ALLEGRO_CONFIG *config = al_load_config_file(BCONFIG_FPATH);
-	
+
 	/* DEBUG */
 #ifdef DEBUG
 	if(balls == NULL)
@@ -138,8 +140,8 @@ void reset_billiard_balls(billiard_ball *balls)
 		perror("billiard_ball null pointer");
 		return;
 	}
-#endif	
-	
+#endif
+
 	if(!config)
 	{
 		perror("fail to load billiard_ball.config");
@@ -159,7 +161,7 @@ void reset_billiard_balls(billiard_ball *balls)
 
 		// read the initial position
 		balls[i].cx = atof(al_get_config_value(config, key, "start_x"));
-		balls[i].cy = atof(al_get_config_value(config, key, "start_y"));	
+		balls[i].cy = atof(al_get_config_value(config, key, "start_y"));
 	}
 	al_destroy_config(config);
 }
@@ -198,7 +200,7 @@ int is_ball_in_bag(billiard_ball ball)
 int is_mouse_on_ball(billiard_ball ball, const int mx, const int my)
 {
 	double distance, dx, dy;
-	
+
 	dx = mx - ball.cx;
 	dy = my - ball.cy;
 	distance = sqrt(dx * dx + dy * dy);
@@ -211,7 +213,7 @@ int is_mouse_on_ball(billiard_ball ball, const int mx, const int my)
 int is_all_ball_stopped(billiard_ball *balls)
 {
 	int i;
-	
+
 	/* DEBUG */
 #ifdef DEBUG
 	if(balls == NULL)
@@ -238,7 +240,7 @@ int is_all_ball_in_bag(billiard_ball *balls)
 	if(balls == NULL)
 	{
 		perror("billiard_ball null pointer");
-		return;
+		return 0;
 	}
 #endif
 
@@ -260,9 +262,9 @@ int is_ball_on_table_horizontal_border(billiard_ball ball)
 	const int hborder_ey = HB_EY;
 	const double new_x = ball.cx + ball.dx;
 	const double new_y = ball.cy + ball.dy;
-	
+
 	if((new_y - BALL_RADIUS <= hborder_sy) ||
-		(new_y + BALL_RADIUS >= hborder_ey))	
+		(new_y + BALL_RADIUS >= hborder_ey))
 	{
 		if((new_x >= hborder_sx1 && new_x <= hborder_ex1) ||
 			(new_x >= hborder_sx2 && new_x <= hborder_ex2))
@@ -279,7 +281,7 @@ int is_ball_on_table_vertical_border(billiard_ball ball)
 	const int vborder_ey = VB_EY;
 	const double new_x = ball.cx + ball.dx;
 	const double new_y = ball.cy + ball.dy;
-	
+
 	if((new_x - BALL_RADIUS <= vborder_sx) ||
 		(new_x + BALL_RADIUS >= vborder_ex))
 	{
@@ -289,7 +291,7 @@ int is_ball_on_table_vertical_border(billiard_ball ball)
 	return 0;
 }
 
-void set_velocity_to_ball(billiard_ball *balls, const int index, 
+void set_velocity_to_ball(billiard_ball *balls, const int index,
 		const double dx, const double dy)
 {
 	/* DEBUG */
@@ -315,7 +317,7 @@ void set_white_ball_to_original_place(billiard_ball *balls)
 		return;
 	}
 #endif
-	
+
 	balls[0].cx = WB_X;
 	balls[0].cy = WB_Y;
 	balls[0].is_on_table = 1;
@@ -325,7 +327,7 @@ int *get_ball_status(billiard_ball *balls)
 {
 	int i;
 	int *status = malloc(sizeof(int) * BALL_COUNT);
-	
+
 	/* DEBUG */
 #ifdef DEBUG
 	if(balls == NULL)
@@ -339,7 +341,7 @@ int *get_ball_status(billiard_ball *balls)
 	{
 		if(balls[i].is_on_table)
 			status[i] = 1;
-		else 
+		else
 			status[i] = 0;
 	}
 	return status;
@@ -360,7 +362,7 @@ static double compute_direction(const double dx, const double dy)
 	if(dy < 0 && dx > 0) theta += 2 * PI;
 	else if(dy < 0 && dx < 0) theta += PI;
 	else if(dy > 0 && dx < 0) theta += PI;
-	
+
 	return theta;
 }
 
@@ -404,7 +406,7 @@ void update_billiard_balls(billiard_ball *balls)
 
 		// compute speed and direction
 		speed = sqrt(dx * dx + dy * dy);
-		direction = compute_direction(dx, dy);	
+		direction = compute_direction(dx, dy);
 		// apply friction force
 		if(speed + BALL_FRICTION > 0) speed += BALL_FRICTION;
 		else if(speed + BALL_FRICTION / 2 > 0) speed += BALL_FRICTION / 2;
@@ -427,10 +429,10 @@ void update_billiard_balls(billiard_ball *balls)
 			while(is_ball_on_table_vertical_border(balls[i]))
 				balls[i].cx += balls[i].dx >= 0 ? CP : -CP;
 		}
-		if(is_ball_on_table_horizontal_border(balls[i]))	
+		if(is_ball_on_table_horizontal_border(balls[i]))
 		{
 			balls[i].dy = -dy;
-			balls[i].dy *= COLLISION_FRICTION;	
+			balls[i].dy *= COLLISION_FRICTION;
 			// to prevent ball sticking on the horizontal border
 			// if the ball is still on the horizontal border next time
 			// change the cy a little so that
@@ -462,20 +464,19 @@ void update_billiard_balls(billiard_ball *balls)
 			if(!balls[j].is_on_table) continue;
 			if(is_ball_collided(balls[i], balls[j]))
 			{
-				
 				//printf("ball %d collide with ball %i\n", i, j);
 				//printf("before collision: ");
 				//printf("ball %i(dx=%lf,dy=%lf), ball %i(dx=%lf,dy=%lf)\n",
 				//		i, balls[i].dx, balls[i].dy, j, balls[j].dx, balls[j].dy);
-				
 
-				/***************************************************************
-				 *	using the 2d collision formula on	
-				 *	http://en.wikipedia.org/wiki/Elastic_collision
-				 *
-				 *	<v1'> = <v1> - (<v1-v2> dot <x1-x2>) / |<x1-x2>|^2 * <x1-x2>
-				 *	<v2'> = <v2> - (<v2-v1> dot <x2-x1>) / |<x2-x1>|^2 * <x2-x1>
-				 ***************************************************************/
+
+                /***************************************************************
+                *	using the 2d collision formula on
+                *	http://en.wikipedia.org/wiki/Elastic_collision
+                *
+                *	<v1'> = <v1> - (<v1-v2> dot <x1-x2>) / |<x1-x2>|^2 * <x1-x2>
+                *	<v2'> = <v2> - (<v2-v1> dot <x2-x1>) / |<x2-x1>|^2 * <x2-x1>
+                ***************************************************************/
 				// new velocities computation
 				// vector(x1 - x2)
 				delta_x = balls[i].cx - balls[j].cx;
@@ -491,7 +492,7 @@ void update_billiard_balls(billiard_ball *balls)
 
 				new_v1x = balls[i].dx - an * delta_x;
 				new_v1y = balls[i].dy - an * delta_y;
-				
+
 				new_v2x = balls[j].dx + an * delta_x;
 				new_v2y = balls[j].dy + an * delta_y;
 
@@ -499,7 +500,7 @@ void update_billiard_balls(billiard_ball *balls)
 				balls[i].dx = new_v1x;
 				balls[i].dy = new_v1y;
 				balls[j].dx = new_v2x;
-				balls[j].dy = new_v2y;	
+				balls[j].dy = new_v2y;
 
 				// two ball collide with friction
 				// which reduce both balls' velocity
@@ -509,7 +510,7 @@ void update_billiard_balls(billiard_ball *balls)
 				balls[j].dy *= COLLISION_FRICTION;
 
 				// play the collision audio
-				al_play_sample(balls[i].collision_sound, 
+				al_play_sample(balls[i].collision_sound,
 						BC_SOUND_GAIN, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
 				while(is_ball_collided(balls[i], balls[j]))
@@ -525,7 +526,7 @@ void update_billiard_balls(billiard_ball *balls)
 
 						balls[i].cx += dcx;
 						balls[i].cy += dcy;
-						balls[j].cx -= dcx;	
+						balls[j].cx -= dcx;
 						balls[j].cy -= dcy;
 					}
 					else
@@ -540,7 +541,7 @@ void update_billiard_balls(billiard_ball *balls)
 	}
 
 	for(i = 0 ; i < BALL_COUNT ; i ++)
-	{	
+	{
 		// change the x, y position
 		balls[i].cx += balls[i].dx;
 		balls[i].cy += balls[i].dy;
@@ -555,7 +556,7 @@ void draw_billiard_balls(billiard_ball *balls)
 	const double dw = 2 * BALL_RADIUS;
 	const double dh = 2 * BALL_RADIUS;
 	double sw, sh, dx, dy;
-	
+
 	/* DEBUG */
 #ifdef DEBUG
 	if(balls == NULL)
