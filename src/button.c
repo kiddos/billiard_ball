@@ -135,6 +135,13 @@ void button_update(button *b, point mouse, bool mouse_pressed) {
   }
 }
 
+void button_resize(button *b, const double scale) {
+  b->width *= scale;
+  b->height *= scale;
+  b->sx -= b->width * (scale - 1) / 2;
+  b->sy -= b->height * (scale - 1) / 2;
+}
+
 void button_draw(button *b) {
   if (b->is_pressed) {
     al_draw_bitmap(b->pressed_bitmap, b->sx, b->sy, 0);

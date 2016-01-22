@@ -34,6 +34,7 @@ button *button_init_without_text(rect r,
 void button_destroy(button *b);
 bool button_is_pressed(button* b);
 void button_update(button *b, point mouse, bool mouse_pressed);
+void button_resize(button *b, const double scale);
 void button_draw(button *b);
 
 #endif /* end of include guard: BUTTON_H */
