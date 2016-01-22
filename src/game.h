@@ -53,7 +53,7 @@ typedef struct game_t {
 
 game *game_init_object();
 void game_release_object(game *obj);
-void game_start(game *g);
+void game_prepare(game *g);
 void game_main_loop(game *g);
 
 #endif /* end of include guard: GAME_H */
