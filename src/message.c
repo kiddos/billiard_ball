@@ -1,8 +1,8 @@
 #include "message.h"
 
 #if defined(__unix__)
-#define WARNING_COLOR "\033[0;31m"
-#define ERROR_COLOR "\033[0;33m"
+#define WARNING_COLOR "\033[0;33m"
+#define ERROR_COLOR "\033[0;31m"
 #define RESET "\033[0m"
 #endif
 
@@ -34,7 +34,7 @@ void warning_message(const char* msg) {
     fprintf(stdout, WARNING_COLOR"[%s]: WARNING: %s\n", time_str, msg);
     fprintf(stdout, RESET"");
   #else
-    fprintf(stdout, "WARNING: %s %s\n", msg);
+    fprintf(stdout, "[%s]: WARNING: %s\n", time_str, msg);
   #endif
 #endif
 }
@@ -53,7 +53,7 @@ void error_message(const char* msg) {
     fprintf(stderr, ERROR_COLOR"[%s]: ERROR: %s\n", time_str, msg);
     fprintf(stdout, RESET"");
   #else
-    fprintf(stdout, "WARNING: %s %s\n", msg);
+    fprintf(stderr, "[%s]: ERROR: %s\n", time_str, msg);
   #endif
 #endif
 }
