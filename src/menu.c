@@ -199,8 +199,8 @@ void draw_menu(menu *m)
 	int i;
 	int y = TY_POS;
 
-	ALLEGRO_COLOR selected = COLOR_WHITE;
-	ALLEGRO_COLOR nselected = COLOR_GREY;
+	ALLEGRO_COLOR selected = color_white();
+	ALLEGRO_COLOR nselected = color_gray();
 
 	ALLEGRO_COLOR colors[] = {nselected, nselected, nselected, nselected};
 	colors[m->selection] = selected;
@@ -220,7 +220,7 @@ void draw_menu(menu *m)
 			bg_dx, bg_dy, bg_dw, bg_dh, 0);
 
 	// title text
-	al_draw_text(m->title_text_font, COLOR_WHITE,
+	al_draw_text(m->title_text_font, color_white(),
 			TTX_POS, TTY_POS, ALLEGRO_ALIGN_CENTER, "BILLIARD BALL");
 
 	// selection text
@@ -240,17 +240,17 @@ void draw_menu(menu *m)
 	{
 		for(i = 0 ; i < m->nrules ; i ++)
 		{
-			al_draw_text(m->menu_font, COLOR_WHITE,
+			al_draw_text(m->menu_font, color_white(),
 					RT_SX, RT_SY + i * RT_MARG, ALLEGRO_ALIGN_LEFT, m->rules[i]);
 		}
 	}
 	else if(m->mode == SCORE_MODE)
 	{
-		al_draw_text(m->menu_font, COLOR_WHITE,
+		al_draw_text(m->menu_font, color_white(),
 				ST_SX, ST_SY, ALLEGRO_ALIGN_LEFT, "RANK          SCORE");
 		for(i = 0 ; i < ST_NUM ; i ++)
 		{
-			al_draw_text(m->menu_font, COLOR_WHITE,
+			al_draw_text(m->menu_font, color_white(),
 					ST_SX, ST_SY + (i + 1) * ST_Y_MARG,
 					ALLEGRO_ALIGN_LEFT, m->scores[i]);
 		}
