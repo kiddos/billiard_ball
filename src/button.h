@@ -20,10 +20,12 @@ typedef struct button_t {
 } button, button_t;
 
 button *button_init(rect r, const char *button_text,
+                    const char *text_font_path,
                     const char *button_press_bitmap_path,
                     const char *button_release_bitmap_path,
                     void (*callback_function) (void));
 button *button_init_without_text(rect r,
+                                 const char *text_font_path,
                                  const char *button_press_bitmap_path,
                                  const char *button_release_bitmap_path,
                                  void (*callback_function) (void));
