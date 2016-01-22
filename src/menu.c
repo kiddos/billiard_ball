@@ -19,7 +19,7 @@ menu *create_menu()
 	m->menu_font = NULL;
 	m->menu_bg = NULL;
 	for(n = 0 ; n < ST_NUM ; n ++)
-		memset(m->scores[n], '\0', ST_MLENGTH);	
+		memset(m->scores[n], '\0', ST_MLENGTH);
 
 	// load the rule text in
 	rule_file = fopen(RT_FPATH, "r");
@@ -36,7 +36,7 @@ menu *create_menu()
 	while((c = fgetc(rule_file)) != EOF)
 	{
 		if(c == '\n')
-		{	
+		{
 			m->rules[m->nrules-1] = realloc(m->rules[m->nrules-1],
 					sizeof(char) * (n + 1));
 			m->rules[m->nrules-1][n] = '\0';
@@ -47,7 +47,7 @@ menu *create_menu()
 		}
 		else
 		{
-			m->rules[m->nrules-1] = realloc(m->rules[m->nrules-1], 
+			m->rules[m->nrules-1] = realloc(m->rules[m->nrules-1],
 					sizeof(char) * (n + 1));
 			m->rules[m->nrules-1][n] = c;
 			n ++;
@@ -69,7 +69,7 @@ menu *create_menu()
 
 	load_menu_score_entries(m);
 
-#ifdef DEBUG 
+#ifdef DEBUG
 	printf("finished loading score entries.\n");
 #endif
 
@@ -106,8 +106,8 @@ menu *create_menu()
 
 void destroy_menu(menu *m)
 {
-	int i;	
-	
+	int i;
+
 	if(m != NULL)
 	{
 		if(m->rules != NULL)
@@ -154,10 +154,10 @@ void load_menu_score_entries(menu *m)
 
 	score_count = atoi(al_get_config_value(config, "entries", "num"));
 	for(n = 0 ; n < score_count ; n ++)
-	{	
+	{
 		memset(key, '\0', key_size);
 		sprintf(key, "entry%d", n);
-		
+
 		scores[n] = atoi(al_get_config_value(config, key, "score"));
 	}
 
@@ -173,7 +173,7 @@ void load_menu_score_entries(menu *m)
 				scores[l] = temp;
 			}
 		}
-	}	
+	}
 	for(n = 0 ; n < score_count ; n ++)
 	{
 		memset(num, '\0', num_str_size);
@@ -221,7 +221,7 @@ void draw_menu(menu *m)
 #endif
 
 	// background
-	al_draw_scaled_bitmap(m->menu_bg, 
+	al_draw_scaled_bitmap(m->menu_bg,
 			bg_sx, bg_sy, bg_sw, bg_sh,
 			bg_dx, bg_dy, bg_dw, bg_dh, 0);
 
@@ -230,18 +230,18 @@ void draw_menu(menu *m)
 			TTX_POS, TTY_POS, ALLEGRO_ALIGN_CENTER, "BILLIARD BALL");
 
 	// selection text
-	al_draw_text(m->menu_font, colors[PLAY_MENU_SELECTION], 
+	al_draw_text(m->menu_font, colors[PLAY_MENU_SELECTION],
 			x, y, ALLEGRO_ALIGN_CENTER, "PLAY");
 	y += y_margin;
-	al_draw_text(m->menu_font, colors[RULE_MENU_SELECTION], 
+	al_draw_text(m->menu_font, colors[RULE_MENU_SELECTION],
 			x, y, ALLEGRO_ALIGN_CENTER, "RULE");
 	y += y_margin;
-	al_draw_text(m->menu_font, colors[SCORE_MENU_SELECTION], 
+	al_draw_text(m->menu_font, colors[SCORE_MENU_SELECTION],
 			x, y, ALLEGRO_ALIGN_CENTER, "SCORE");
 	y += y_margin;
-	al_draw_text(m->menu_font, colors[EXIT_MENU_SELECTION], 
+	al_draw_text(m->menu_font, colors[EXIT_MENU_SELECTION],
 			x, y, ALLEGRO_ALIGN_CENTER, "EXIT");
-	
+
 	if(m->mode == RULE_MODE)
 	{
 		for(i = 0 ; i < m->nrules ; i ++)
@@ -252,12 +252,12 @@ void draw_menu(menu *m)
 	}
 	else if(m->mode == SCORE_MODE)
 	{
-		al_draw_text(m->menu_font, COLOR_WHITE, 
+		al_draw_text(m->menu_font, COLOR_WHITE,
 				ST_SX, ST_SY, ALLEGRO_ALIGN_LEFT, "RANK          SCORE");
 		for(i = 0 ; i < ST_NUM ; i ++)
 		{
 			al_draw_text(m->menu_font, COLOR_WHITE,
-					ST_SX, ST_SY + (i + 1) * ST_Y_MARG, 
+					ST_SX, ST_SY + (i + 1) * ST_Y_MARG,
 					ALLEGRO_ALIGN_LEFT, m->scores[i]);
 		}
 	}
@@ -305,7 +305,7 @@ void set_menu_mode(menu *m, const int mode)
 	m->mode = mode;
 
 	// if the mode to change is SCORE_MODE
-	// reload the score 
+	// reload the score
 	if(mode == SCORE_MODE)
 		load_menu_score_entries(m);
 }
