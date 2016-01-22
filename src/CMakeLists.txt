@@ -3,7 +3,7 @@ set(ALLEGRO_LIBRARY
     -lallegro_image -lallegro_dialog -lallegro_primitives -lm)
 
 set(PROJECT_SRC background.c ball.c main.c menu.c score_board.c commons.c
-    message.c)
+    game.c message.c)
 
 add_executable(billiard_ball ${PROJECT_SRC})
 target_link_libraries(billiard_ball ${ALLEGRO_LIBRARY})
