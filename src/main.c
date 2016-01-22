@@ -1,268 +1,5 @@
 #include "main.h"
 
-/* constants */
-#define GAME_LOADING_TEXT "LOADING ..."
-// default font to display
-const char* const GAME_FONT_FILE_PATH = "./res/font/Junicode.ttf";
-// background music file path
-const char* const GAME_BACKGROUND_MUSIC_PATH =
-      "./res/sound/background_music.ogg";
-// music gain
-const double GAME_DEFAULT_MUSIC_GAIN = 1.6;
-
-bool main_init_allegro_library() {
-  /* allegro main library */
-  if(!al_init()) {
-    error_message("fail to initialize allegro library");
-    return false;
-  }
-  /* inputs */
-  if(!al_install_mouse()) {
-    error_message("fail to install mouse for allegro");
-    return false;
-  }
-  if(!al_install_keyboard()) {
-    error_message("fail to install keyboard for allegro");
-    return 0;
-  }
-  /* outputs */
-  if(!al_install_audio()) {
-    error_message("fail to install audio for allegro");
-    return 0;
-  }
-
-  /* addon */
-  if(!al_init_acodec_addon()) {
-    error_message("fail to initialize audio codec addon for allegro");
-    return 0;
-  }
-  al_init_font_addon();
-  if(!al_init_ttf_addon()) {
-    error_message("fail to initialize font addon for allegro");
-    return 0;
-  }
-  if(!al_init_image_addon()) {
-    error_message("fail to initialize image addon for allegro");
-    return 0;
-  }
-  if(!al_init_native_dialog_addon()) {
-    error_message("fail to initialize dialog addon for allegro");
-    return 0;
-  }
-  if(!al_init_primitives_addon()) {
-    error_message("fail to initialize primitive addon for allegro");
-    return 0;
-  }
-
-  /* reserve sample for audio output */
-  if(!al_reserve_samples(20)) {
-    error_message("fail to reserve sample for audio output");
-    return 1;
-  }
-  return 1;
-}
-
-game *main_init_game_object() {
-  game *g = malloc(sizeof(game));
-
-  // set default value
-  g->window_width = DEFAULT_WINDOW_WIDTH;
-  g->window_height = DEFAULT_WINDOW_HEIGHT;
-  g->loading_font_size = WINDOW_WIDTH / 20;
-  g->mouse_font_size = MOUSE_FONT_SIZE;
-
-  // load font
-  g->loading_font = al_load_font(GAME_FONT_FILE_PATH,
-                                g->loading_font_size,
-                                ALLEGRO_TTF_NO_KERNING);
-  if (!g->loading_font) {
-    error_message("fail to load loading font");
-    return NULL;
-  }
-
-  // mouse font
-  g->mouse_font = al_load_font(GAME_FONT_FILE_PATH,
-                               g->mouse_font_size,
-                               ALLEGRO_TTF_NO_KERNING);
-  if (!g->mouse_font) {
-    error_message("fail to load mouse font");
-    al_destroy_font(g->loading_font);
-    return NULL;
-  }
-
-  // display flags
-  // - allow resizing
-  // - enable opengl
-  al_set_new_display_flags(ALLEGRO_WINDOWED);
-  al_set_new_display_flags(ALLEGRO_RESIZABLE);
-  al_set_new_display_flags(ALLEGRO_OPENGL);
-
-  // game display
-  g->display = al_create_display(g->window_width, g->window_height);
-  if (!g->display) {
-    error_message("fail to create allegro display");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    return NULL;
-  }
-
-  // after game display is prepare
-  // draw the loading text to screen
-  al_clear_to_color(al_map_rgb(0, 0, 0));
-  al_draw_text(g->loading_font,
-               al_map_rgb(255, 255, 255),
-               g->window_width / 2,
-               g->window_height / 2 - g->loading_font_size,
-               ALLEGRO_ALIGN_CENTER, GAME_LOADING_TEXT);
-  al_flip_display();
-  // and load the rest of the objects
-
-  // timer object
-  g->timer = al_create_timer(1.0 / FPS);
-  if (!g->timer) {
-    error_message("fail to create allegro timer");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    return NULL;
-  }
-
-  // event queue
-  g->event_queue = al_create_event_queue();
-  if (!g->event_queue) {
-    error_message("fail to create allegro event queue");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    return NULL;
-  }
-
-  // background music
-  g->bg_music = al_load_sample(GAME_BACKGROUND_MUSIC_PATH);
-  if (!g->bg_music) {
-    error_message("fail to load background music");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    return NULL;
-  }
-  g->bg_music_instance = al_create_sample_instance(g->bg_music);
-  if (!g->bg_music_instance) {
-    error_message("fail to load background music instance");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    return NULL;
-  }
-  if (!al_set_sample_instance_playmode(g->bg_music_instance,
-                                      ALLEGRO_PLAYMODE_LOOP)) {
-    error_message("fail to set background music playmode to loop");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    al_destroy_sample_instance(g->bg_music_instance);
-    return NULL;
-  }
-  if (!al_set_sample_instance_gain(g->bg_music_instance,
-                                  GAME_DEFAULT_MUSIC_GAIN)) {
-    error_message("fail to set background music volume");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    al_destroy_sample_instance(g->bg_music_instance);
-    return NULL;
-  }
-  // attach the music sample instance to the default mixer
-  if (!al_attach_sample_instance_to_mixer(g->bg_music_instance,
-                                         al_get_default_mixer())) {
-    error_message("fail to attach background music to mixer");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    al_destroy_sample_instance(g->bg_music_instance);
-    return NULL;
-  }
-
-  /* modules */
-  // background module
-  g->bg = create_background();
-  if (!g->bg) {
-    error_message("fail to create background");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    al_destroy_sample_instance(g->bg_music_instance);
-    return NULL;
-  }
-
-  // billiard balls module
-  g->balls = create_billiard_balls();
-  if (!g->balls) {
-    perror("fail to create billiard balls");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->bg);
-    return NULL;
-  }
-
-  // menu module
-  g->m = create_menu();
-  if (!g->m) {
-    error_message("fail to create menu");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->bg);
-    destroy_billiard_balls(g->balls);
-    return NULL;
-  }
-
-  // score board module
-  g->board = create_score_board();
-  if (!g->board) {
-    error_message("fail to create menu");
-    al_destroy_font(g->loading_font);
-    al_destroy_font(g->mouse_font);
-    al_destroy_display(g->display);
-    al_destroy_timer(g->timer);
-    al_destroy_event_queue(g->event_queue);
-    al_destroy_sample(g->bg_music);
-    al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->bg);
-    destroy_billiard_balls(g->balls);
-    destroy_menu(g->m);
-    return NULL;
-  }
-  return g;
-}
-
 int main(int argc, char *argv[]) {
   // allegro essential elements
   ALLEGRO_FONT *loading_font = NULL;
@@ -312,18 +49,12 @@ int main(int argc, char *argv[]) {
   const int who_str_size = 128;
   char who_win[who_str_size];
 
-  // initialize necessary library
-  if(!init()) return 1;
+  regular_message("loading...");
 
-  fprintf(stdout, "loading...\n");
-  // reserve amount of samples to 20
-  // there are 16 balls with different collision sound track
-  // and 1 background music
-  if(!al_reserve_samples(20))
-  {
-    perror("fail to reserve samples");
+  // initialize necessary library
+  if(!main_init_allegro_library())
     return 1;
-  }
+
   // load font
   if(!(loading_font = al_load_font(
           FONT_FPATH, LOADING_FONT_SIZE, ALLEGRO_TTF_NO_KERNING)))
@@ -1002,59 +733,95 @@ int main(int argc, char *argv[]) {
   destroy_billiard_balls(balls);
   destroy_menu(m);
   destroy_score_board(board);
+
+  /* close allegro library */
+  main_close_allegro_library();
   return 0;
 }
 
-int init()
-{
-  if(!al_init())
-  {
-    perror("fail to initialize allegro library");
-    return 0;
+bool main_init_allegro_library() {
+  /* allegro main library */
+  if(!al_init()) {
+    error_message("fail to initialize allegro library");
+    return false;
   }
-  if(!al_install_mouse())
-  {
-    perror("fail to install mouse");
-    return 0;
+  /* inputs */
+  if(!al_install_mouse()) {
+    error_message("fail to install mouse for allegro");
+    return false;
   }
-  if(!al_install_keyboard())
-  {
-    perror("fail to install keyboard");
-    return 0;
+  if(!al_install_keyboard()) {
+    error_message("fail to install keyboard for allegro");
+    return false;
   }
-  if(!al_install_audio())
-  {
-    perror("fail to install audio");
-    return 0;
+  /* outputs */
+  if(!al_install_audio()) {
+    error_message("fail to install audio for allegro");
+    return false;
   }
 
-  if(!al_init_acodec_addon())
-  {
-    perror("fail to initialize allegro acodec addon");
-    return 0;
+  /* addon */
+  if(!al_init_acodec_addon()) {
+    error_message("fail to initialize audio codec addon for allegro");
+    return false;
   }
   al_init_font_addon();
-  if(!al_init_ttf_addon())
-  {
-    perror("fail to initialize allegro ttf addon");
-    return 0;
+  if(!al_init_ttf_addon()) {
+    error_message("fail to initialize font addon for allegro");
+    return false;
   }
-  if(!al_init_image_addon())
-  {
-    perror("fail to initialize allgro image addon");
-    return 0;
+  if(!al_init_image_addon()) {
+    error_message("fail to initialize image addon for allegro");
+    return false;
   }
-  if(!al_init_native_dialog_addon())
-  {
-    perror("fail to initialize allegro native dialog");
-    return 0;
+  if(!al_init_native_dialog_addon()) {
+    error_message("fail to initialize dialog addon for allegro");
+    return false;
   }
-  if(!al_init_primitives_addon())
-  {
-    perror("fail to initialize allegro primitives addon");
-    return 0;
+  if(!al_init_primitives_addon()) {
+    error_message("fail to initialize primitive addon for allegro");
+    return false;
   }
-  return 1;
+
+  /*
+   * reserve sample for audio output
+   * reserve amount of samples to 20
+   * there are 16 balls with different collision sound track
+   * and 1 background music
+   */
+  if(!al_reserve_samples(20)) {
+    error_message("fail to reserve sample for audio output");
+  }
+  return true;
+}
+
+void main_close_allegro_library() {
+  regular_message("shutdown primitive addon");
+  al_shutdown_primitives_addon();
+
+  regular_message("shutdown native dialog addon");
+  al_shutdown_native_dialog_addon();
+
+  regular_message("shutdown image addon");
+  al_shutdown_image_addon();
+
+  regular_message("shutdown ttf addon");
+  al_shutdown_ttf_addon();
+
+  regular_message("shutdown font addon");
+  al_shutdown_font_addon();
+
+  regular_message("uninstall audio");
+  al_uninstall_audio();
+
+  regular_message("uninstall keyboard");
+  al_uninstall_keyboard();
+
+  regular_message("uinstall mouse");
+  al_uninstall_mouse();
+
+  regular_message("uninstll allegro system");
+  al_uninstall_system();
 }
 
 void draw_mouse_coordinates(const int mx, const int my, const ALLEGRO_FONT *font) {
