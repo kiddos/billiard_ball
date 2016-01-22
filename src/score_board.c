@@ -442,8 +442,8 @@ void draw_score_board(score_board *board)
 	const int y_margin = SB_Y_MARG;
 	const int sx = 0;
 	const int sy = 0;
-	const ALLEGRO_COLOR selected = COLOR_WHITE;
-	const ALLEGRO_COLOR nselected = COLOR_GREY;
+	const ALLEGRO_COLOR selected = color_white();
+	const ALLEGRO_COLOR nselected = color_gray();
 
 	int i;
 	int sw = al_get_bitmap_width(board->score_board_bitmap);
@@ -471,9 +471,9 @@ void draw_score_board(score_board *board)
 			x2 - x_margin, y2 - y_margin, al_map_rgb(255, 255, 255));
 	*/
 	// player 1
-	al_draw_scaled_bitmap(board->score_board_bitmap, 
+	al_draw_scaled_bitmap(board->score_board_bitmap,
 			sx, sy, sw, sh, x1, y1, width, height, 0);
-	al_draw_textf(board->number_font, COLOR_BLACK, 
+	al_draw_textf(board->number_font, color_black(),
 			cx, cy, ALLEGRO_ALIGN_CENTER, "%03d", board->p1.score);
 	al_draw_text(board->name_text_font,
 			board->turn == SB_P1_TURN ? selected : nselected,
@@ -491,7 +491,7 @@ void draw_score_board(score_board *board)
 	// player 2
 	al_draw_scaled_bitmap(board->score_board_bitmap, 
 			sx, sy, sw, sh, x1, y1, width, height, 0);
-	al_draw_textf(board->number_font, COLOR_BLACK, 
+	al_draw_textf(board->number_font, color_black(), 
 			cx, cy, ALLEGRO_ALIGN_CENTER, "%03d", board->p2.score);
 	al_draw_text(board->name_text_font,
 			board->turn == SB_P2_TURN ? selected : nselected,
@@ -506,17 +506,17 @@ void draw_score_board(score_board *board)
 	
 	for(i = 0 ; i < MAX_GAME_NUM ; i ++)
 	{
-		al_draw_text(board->winner_board_text_font, COLOR_BLACK,
+		al_draw_text(board->winner_board_text_font, color_black(),
 			x1 + SB_WB_X_PADDING + i * SB_WB_MARG, 
 			cy - SB_WB_Y_PADDING, ALLEGRO_ALIGN_CENTER, board->p1.name);
-		al_draw_textf(board->winner_board_text_font, COLOR_BLACK,
+		al_draw_textf(board->winner_board_text_font, color_black(),
 			x1 + SB_WB_X_PADDING + i * SB_WB_MARG, 
 			cy, ALLEGRO_ALIGN_CENTER, 
 			"%03d", board->scores[i][0]);
-		al_draw_text(board->winner_board_text_font, COLOR_BLACK,
+		al_draw_text(board->winner_board_text_font, color_black(),
 			x1 + SB_WB_X_PADDING + i * SB_WB_MARG, 
 			cy + SB_WB_Y_PADDING, ALLEGRO_ALIGN_CENTER, board->p2.name);
-		al_draw_textf(board->winner_board_text_font, COLOR_BLACK,
+		al_draw_textf(board->winner_board_text_font, color_black(),
 			x1 + SB_WB_X_PADDING + i * SB_WB_MARG, 
 			cy + 2 * SB_WB_Y_PADDING, ALLEGRO_ALIGN_CENTER, 
 			"%03d", board->scores[i][1]);
