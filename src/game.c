@@ -12,6 +12,21 @@ const uint32_t GAME_DEFAULT_LOADING_FONT_SIZE = 36;
 game *game_init_object() {
   game *g = malloc(sizeof(game));
 
+  // default pointers null
+  g->display = NULL;
+  g->timer = NULL;
+  g->loading_font = NULL;
+  g->mouse_font = NULL;
+  g->event_queue = NULL;
+  g->bg_music = NULL;
+  g->bg_music_instance = NULL;
+  g->bg = NULL;
+  g->balls = NULL;
+  g->m = NULL;
+  g->board = NULL;
+  g->ball_original_status = NULL;
+  g->ball_new_status = NULL;
+
   // set default value
   g->window_width = DEFAULT_WINDOW_WIDTH;
   g->window_height = DEFAULT_WINDOW_HEIGHT;
@@ -40,9 +55,9 @@ game *game_init_object() {
   // display flags
   // - allow resizing
   // - enable opengl
-  al_set_new_display_flags(ALLEGRO_WINDOWED);
-  al_set_new_display_flags(ALLEGRO_RESIZABLE);
-  al_set_new_display_flags(ALLEGRO_OPENGL);
+  al_set_new_display_flags(ALLEGRO_WINDOWED |
+                           ALLEGRO_RESIZABLE |
+                           ALLEGRO_OPENGL);
 
   // game display
   g->display = al_create_display(g->window_width, g->window_height);
@@ -52,6 +67,7 @@ game *game_init_object() {
     al_destroy_font(g->mouse_font);
     return NULL;
   }
+  al_acknowledge_resize(g->display);
 
   // after game display is prepare
   // draw the loading text to screen
