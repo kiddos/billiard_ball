@@ -1,7 +1,7 @@
 #include "main.h"
 
 int main(int argc, char *argv[]) {
-  game *game_obj;
+  game *g;
 
   regular_message("loading...");
   if (!main_init_allegro_library()) {
@@ -9,11 +9,11 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  game_obj = game_init_object();
-  if (game_obj != NULL) {
-    game_prepare(game_obj);
-    game_main_loop(game_obj);
-    game_release_object(game_obj);
+  g = game_init();
+  if (g != NULL) {
+    game_prepare(g);
+    game_main_loop(g);
+    game_destroy(g);
 
     main_close_allegro_library();
     return 0;
