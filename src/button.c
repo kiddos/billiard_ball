@@ -6,6 +6,7 @@ button *button_init(rect r, const char *button_text,
                     const char *text_font_path,
                     const char *button_press_bitmap_path,
                     const char *button_release_bitmap_path,
+                    const char *button_hover_bitmap_path,
                     void (*callback_function) (void)) {
   const uint32_t text_size = r.height * TEXT_SIZE_SCALE;
   button *b = malloc(sizeof(button));
@@ -37,12 +38,20 @@ button *button_init(rect r, const char *button_text,
     return NULL;
   }
 
+  b->hover_bitmap = al_load_bitmap(button_hover_bitmap_path);
+  if (!b->hover_bitmap) {
+    al_destroy_bitmap(b->pressed_bitmap);
+    al_destroy_bitmap(b->release_bitmap);
+    return NULL;
+  }
+
   b->text_font = al_load_font(text_font_path,
                               text_size,
                               ALLEGRO_TTF_NO_KERNING);
   if (!b->text_font) {
     al_destroy_bitmap(b->pressed_bitmap);
     al_destroy_bitmap(b->release_bitmap);
+    al_destroy_bitmap(b->hover_bitmap);
     return NULL;
   }
 
@@ -53,6 +62,7 @@ button *button_init_without_text(rect r,
                                  const char *text_font_path,
                                  const char *button_press_bitmap_path,
                                  const char *button_release_bitmap_path,
+                                 const char *button_hover_bitmap_path,
                                  void (*callback_function) (void)) {
   button *b = malloc(sizeof(button));
   // init with null;
@@ -83,6 +93,13 @@ button *button_init_without_text(rect r,
     return NULL;
   }
 
+  b->hover_bitmap = al_load_bitmap(button_hover_bitmap_path);
+  if (!b->hover_bitmap) {
+    al_destroy_bitmap(b->pressed_bitmap);
+    al_destroy_bitmap(b->release_bitmap);
+    return NULL;
+  }
+
   return b;
 }
 
@@ -94,7 +111,7 @@ bool button_is_pressed(button* b) {
 
 }
 
-void button_update(button *b, uint64_t time_stamp) {
+void button_update(button *b, point mouse, uint64_t time_stamp) {
 
 }
 
