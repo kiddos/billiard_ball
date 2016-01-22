@@ -13,7 +13,7 @@ typedef struct button_t {
   ALLEGRO_FONT *text_font;
   ALLEGRO_COLOR text_color;
   bool with_text;
-  bool is_pressed;
+  bool is_pressed, is_hovered;
   bool action_performed;
   double sx, sy, width, height;
   void (*callback) (void);
@@ -33,7 +33,7 @@ button *button_init_without_text(rect r,
                                  void (*callback_function) (void));
 void button_destroy(button *b);
 bool button_is_pressed(button* b);
-void button_update(button *b, point mouse, uint64_t time_stamp);
+void button_update(button *b, point mouse, bool mouse_pressed);
 void button_draw(button *b);
 
 #endif /* end of include guard: BUTTON_H */
