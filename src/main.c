@@ -847,7 +847,7 @@ void main_close_allegro_library() {
 void draw_mouse_coordinates(const int mx, const int my, const ALLEGRO_FONT *font) {
   char text[20] = {'\0'};
   sprintf(text, "[%03d,%03d]", mx, my);
-  al_draw_text(font, COLOR_WHITE, MX, MY, ALLEGRO_ALIGN_LEFT, text);
+  al_draw_text(font, color_white(), MX, MY, ALLEGRO_ALIGN_LEFT, text);
 }
 
 void draw_referencing_line(const int sx, const int sy, const int cx, const int cy) {
@@ -883,7 +883,7 @@ void draw_referencing_line(const int sx, const int sy, const int cx, const int c
     }
   }
 
-  al_draw_line(line_x, line_y, cx, cy, COLOR_WHITE, RL_WIDTH);
+  al_draw_line(line_x, line_y, cx, cy, color_white(), RL_WIDTH);
 }
 
 #undef GAME_LOADING_TEXT
