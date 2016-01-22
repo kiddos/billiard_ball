@@ -12,6 +12,8 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "message.h"
+
 /* math constants */
 extern const double PI;
 
