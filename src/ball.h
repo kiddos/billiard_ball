@@ -25,10 +25,13 @@
 #define WB_Y WHITE_BALL_DEFAULT_Y
 #define BC_SOUND_GAIN BALL_COLLISOION_SOUND_GAIN
 
+/* constants */
+extern const double BALL_DELTA_SCALE;
+
 typedef struct billiard_ball_t
 {
 	int number, score, is_on_table;
-	double cx, cy, dx, dy;	
+	double cx, cy, dx, dy;
 	double bitmap_sw, bitmap_sh;
 	ALLEGRO_BITMAP *bitmap;
 	ALLEGRO_SAMPLE *collision_sound;
