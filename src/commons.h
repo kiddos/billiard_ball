@@ -86,6 +86,10 @@ typedef struct rect_t {
   double width, height, depth;
 } rect, rect_t;
 
+typedef struct size {
+  double width, height, depth;
+} size;
+
 point point_init(double x, double y, double z);
 double point_get_x(point p);
 double point_get_y(point p);
@@ -99,5 +103,10 @@ double rect_get_z(rect r);
 double rect_get_w(rect r);
 double rect_get_h(rect r);
 double rect_get_d(rect r);
+
+size size_init(double width, double height, double depth);
+double size_get_width(size s);
+double size_get_height(size s);
+double size_get_depth(size s);
 
 #endif /* end of include guard: COMMONS_H */

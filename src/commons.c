@@ -102,3 +102,23 @@ double rect_get_d(rect r) {
   return r.depth;
 }
 
+size size_init(double width, double height, double depth) {
+  size s;
+  s.width = width;
+  s.height = height;
+  s.depth = depth;
+  return s;
+}
+
+double size_get_width(size s) {
+  return s.width;
+}
+
+double size_get_height(size s) {
+  return s.height;
+}
+
+double size_get_depth(size s) {
+  return s.depth;
+}
+
