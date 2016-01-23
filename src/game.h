@@ -25,7 +25,7 @@ typedef enum {
 
 typedef struct game_t {
   // allegro essential elements
-  union {
+  struct {
     ALLEGRO_DISPLAY *display;
     ALLEGRO_TIMER *timer;
     ALLEGRO_EVENT_QUEUE *event_queue;
