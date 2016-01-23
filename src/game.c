@@ -2,6 +2,10 @@
 
 /* constants */
 #define GAME_LOADING_TEXT "LOADING ..."
+// button bitmaps
+#define BUTTON_PRESSED_BITMAP "./res/pics/button_pressed.png"
+#define BUTTON_RELEASED_BITMAP "./res/pics/button_released.png"
+
 const char* const GAME_FONT_FILE_PATH = "./res/font/Junicode.ttf";
 const char* const GAME_BACKGROUND_MUSIC_PATH =
       "./res/sound/background_music.ogg";
@@ -10,7 +14,7 @@ const uint32_t GAME_DEFAULT_MOUSE_FONT_SIZE = 12;
 const uint32_t GAME_DEFAULT_LOADING_FONT_SIZE = 36;
 
 game * game_init() {
-  game *g = malloc(sizeof(game));
+  game *g = (game *) malloc(sizeof(game));
 
   // default pointers null
   g->core.display = NULL;
@@ -27,6 +31,9 @@ game * game_init() {
   g->module.board = NULL;
   g->module.new_game_button = NULL;
   g->module.back_return_button = NULL;
+  g->module.new_game_button = NULL;
+  g->module.back_return_button = NULL;
+
   g->ball_original_status = NULL;
   g->ball_new_status = NULL;
 
@@ -42,6 +49,7 @@ game * game_init() {
                                 ALLEGRO_TTF_NO_KERNING);
   if (!g->loading_font) {
     error_message("fail to load loading font");
+    free(g);
     return NULL;
   }
 
@@ -52,6 +60,7 @@ game * game_init() {
   if (!g->mouse_font) {
     error_message("fail to load mouse font");
     al_destroy_font(g->loading_font);
+    free(g);
     return NULL;
   }
 
@@ -68,6 +77,7 @@ game * game_init() {
     error_message("fail to create allegro display");
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
+    free(g);
     return NULL;
   }
   al_acknowledge_resize(g->core.display);
@@ -90,6 +100,7 @@ game * game_init() {
     al_destroy_font(g->loading_font);
     al_destroy_font(g->mouse_font);
     al_destroy_display(g->core.display);
+    free(g);
     return NULL;
   }
 
@@ -101,6 +112,7 @@ game * game_init() {
     al_destroy_font(g->mouse_font);
     al_destroy_display(g->core.display);
     al_destroy_timer(g->core.timer);
+    free(g);
     return NULL;
   }
 
@@ -113,6 +125,7 @@ game * game_init() {
     al_destroy_display(g->core.display);
     al_destroy_timer(g->core.timer);
     al_destroy_event_queue(g->core.event_queue);
+    free(g);
     return NULL;
   }
   g->bg_music_instance = al_create_sample_instance(g->bg_music);
@@ -124,6 +137,7 @@ game * game_init() {
     al_destroy_timer(g->core.timer);
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
+    free(g);
     return NULL;
   }
   if (!al_set_sample_instance_playmode(g->bg_music_instance,
@@ -136,6 +150,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
+    free(g);
     return NULL;
   }
   if (!al_set_sample_instance_gain(g->bg_music_instance,
@@ -148,6 +163,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
+    free(g);
     return NULL;
   }
   // attach the music sample instance to the default mixer
@@ -161,6 +177,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
+    free(g);
     return NULL;
   }
 
@@ -176,6 +193,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
+    free(g);
     return NULL;
   }
 
@@ -191,6 +209,7 @@ game * game_init() {
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
     destroy_background(g->module.bg);
+    free(g);
     return NULL;
   }
 
@@ -207,6 +226,7 @@ game * game_init() {
     al_destroy_sample_instance(g->bg_music_instance);
     destroy_background(g->module.bg);
     destroy_billiard_balls(g->module.balls);
+    free(g);
     return NULL;
   }
 
@@ -224,6 +244,56 @@ game * game_init() {
     destroy_background(g->module.bg);
     destroy_billiard_balls(g->module.balls);
     destroy_menu(g->module.m);
+    free(g);
+    return NULL;
+  }
+
+  rect r = rect_init(g->window_width - g->window_width / 12,
+                     10, 0, g->window_width / 12, g->window_width / 24, 0);
+  g->module.new_game_button = button_init(r, "New Game",
+                                          GAME_FONT_FILE_PATH,
+                                          BUTTON_PRESSED_BITMAP,
+                                          BUTTON_RELEASED_BITMAP,
+                                          BUTTON_RELEASED_BITMAP,
+                                          NULL);
+  if (!g->module.new_game_button) {
+    error_message("fail to create new game button");
+    al_destroy_font(g->loading_font);
+    al_destroy_font(g->mouse_font);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
+    al_destroy_sample(g->bg_music);
+    al_destroy_sample_instance(g->bg_music_instance);
+    destroy_background(g->module.bg);
+    destroy_billiard_balls(g->module.balls);
+    destroy_menu(g->module.m);
+    destroy_score_board(g->module.board);
+    free(g);
+    return NULL;
+  }
+
+  g->module.back_return_button = button_init(r, "Back",
+                                          "./res/font/Junicode.ttf",
+                                          "./res/pics/button_pressed.png",
+                                          "./res/pics/button_released.png",
+                                          "./res/pics/button_released.png",
+                                          NULL);
+  if (!g->module.back_return_button) {
+    error_message("fail to create back return button");
+    al_destroy_font(g->loading_font);
+    al_destroy_font(g->mouse_font);
+    al_destroy_display(g->core.display);
+    al_destroy_timer(g->core.timer);
+    al_destroy_event_queue(g->core.event_queue);
+    al_destroy_sample(g->bg_music);
+    al_destroy_sample_instance(g->bg_music_instance);
+    destroy_background(g->module.bg);
+    destroy_billiard_balls(g->module.balls);
+    destroy_menu(g->module.m);
+    destroy_score_board(g->module.board);
+    button_destroy(g->module.new_game_button);
+    free(g);
     return NULL;
   }
   return g;
@@ -613,4 +683,9 @@ void game_main_loop(game *g) {
     }
   }
 }
+
+/* undefine constant for scope */
+#undef GAME_LOADING_TEXT
+#undef BUTTON_PRESSED_BITMAP
+#undef BUTTON_RELEASED_BITMAP
 
