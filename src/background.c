@@ -1,12 +1,14 @@
 #include "background.h"
 
-const char* const BACKGROUND_CONFIG_FILE_PATH = "./config/background.config";
+#define BACKGROUND_CONFIG_FILE_PATH "./config/background.config"
 
-background *create_background() {
-  background *bg = malloc(sizeof(background));
+background *background_init(size window_size) {
+  background *bg = (background *) malloc(sizeof(background));
   bg->table_bg = NULL;
   bg->vertical_border = NULL;
   bg->horizontal_border = NULL;
+  bg->bg_width = window_size.width;
+  bg->bg_height = window_size.height;
 
   ALLEGRO_CONFIG *config = al_load_config_file(BACKGROUND_CONFIG_FILE_PATH);
   if (!config) {
@@ -50,7 +52,7 @@ background *create_background() {
   return bg;
 }
 
-void destroy_background(background *bg) {
+void background_destroy(background *bg) {
   if(bg != NULL) {
     if(bg->table_bg != NULL) {
       al_destroy_bitmap(bg->table_bg);
@@ -163,32 +165,31 @@ static void draw_vertical_border(const background *bg) {
                         dx2, dy, width2, height, 0);
 }
 
-void draw_background(background *bg) {
-  const double sx = 0;
-  const double sy = 0;
-  const double sw = al_get_bitmap_width(bg->table_bg);
-  const double sh = al_get_bitmap_height(bg->table_bg);
+void background_update(background *bg, const uint64_t time_stamp) {
+  bg->last_update_time = time_stamp;
+}
+
+void background_resize(background *bg, size new_size) {
+  bg->bg_width = new_size.width;
+  bg->bg_height = new_size.height;
+}
+
+void background_draw(background *bg) {
   const double dx = VB_SX;
   const double dy = HB_SY;
-  const double dw = VB_EX - VB_SX;
-  const double dh = HB_EY - HB_SY;
-
-  /* DEBUG */
-#ifdef DEBUG
-  if(bg == NULL) {
-    perror("background null pointer");
-    return;
-  }
-#endif
 
   al_draw_scaled_bitmap(bg->table_bg,
-      sx, sy, sw, sh,
-      dx, dy, dw, dh, 0);
+                        0, 0,
+                        al_get_bitmap_width(bg->table_bg),
+                        al_get_bitmap_height(bg->table_bg),
+                        dx, dy, bg->bg_width, bg->bg_height * 2 / 3, 0);
 
   /* DEBUG */
-  //al_draw_filled_rectangle(0, 200, 800, 600, al_map_rgb(8, 138, 8));
+  /*al_draw_filled_rectangle(0, 200, bg->bg_width, 500,*/
+      /*al_map_rgb(8, 138, 8));*/
 
   draw_horizontal_border(bg);
   draw_vertical_border(bg);
 }
 
+#undef BACKGROUND_CONFIG_FILE_PATH
