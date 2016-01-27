@@ -12,6 +12,7 @@ typedef struct button_t {
   ALLEGRO_BITMAP *pressed_bitmap, *release_bitmap, *hover_bitmap;
   ALLEGRO_FONT *text_font;
   ALLEGRO_COLOR text_color;
+  char *text;
   bool with_text;
   bool is_pressed, is_hovered;
   bool action_performed;
@@ -21,6 +22,7 @@ typedef struct button_t {
 
 button *button_init(rect r, const char *button_text,
                     const char *text_font_path,
+                    ALLEGRO_COLOR text_color,
                     const char *button_press_bitmap_path,
                     const char *button_release_bitmap_path,
                     const char *button_hover_bitmap_path,
