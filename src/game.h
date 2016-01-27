@@ -11,13 +11,6 @@
 #include "score_board.h"
 #include "button.h"
 
-/* constants */
-extern const char* const GAME_BACKGROUND_MUSIC_PATH;
-extern const char* const GAME_FONT_FILE_PATH;
-extern const double GAME_DEFAULT_MUSIC_GAIN;
-extern const uint32_t GAME_DEFAULT_MOUSE_FONT_SIZE;
-extern const uint32_t GAME_DEFAULT_LOADING_FONT_SIZE;
-
 typedef enum {
   MENU_MODE,
   GAME_MODE
