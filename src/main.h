@@ -13,10 +13,6 @@
 // background music file path
 #define BACKGROUND_MUSIC_FILE_PATH "./res/sound/background_music.ogg"
 
-// button bitmaps
-#define BUTTON_PRESSED_BITMAP "./res/pics/button_pressed.png"
-#define BUTTON_RELEASED_BITMAP "./res/pics/button_released.png"
-
 // TODO
 // font size should be variable
 // as window size change font size also changes
@@ -29,8 +25,6 @@
 // music gain should be variable
 // music gain
 #define MUSIC_GAIN 1.6
-
-
 
 // mouse coordinate position
 #define MOUSE_X_POSITION (WINDOW_WIDTH - 50)
