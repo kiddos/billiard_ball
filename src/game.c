@@ -40,6 +40,11 @@ game * game_init() {
   g->window_height = DEFAULT_WINDOW_HEIGHT;
   g->loading_font_size = GAME_DEFAULT_LOADING_FONT_SIZE;
   g->mouse_font_size = GAME_DEFAULT_MOUSE_FONT_SIZE;
+  g->redraw = false;
+  g->mx = 0;
+  g->my = 0;
+  g->is_ball_hitted = false;
+  g->is_ready_to_hit = false;
 
   // load font
   g->loading_font = al_load_font(GAME_FONT_FILE_PATH,
@@ -365,13 +370,15 @@ void game_prepare(game *g) {
 }
 
 /* draw mouse coordinates */
-static void draw_mouse_coordinates(const int mx,
-                                   const int my,
+static void draw_mouse_coordinates(const point mouse, const size window_size,
                                    const ALLEGRO_FONT *font) {
-  char text[20] = {'\0'};
-  sprintf(text, "[%03d,%03d]", mx, my);
+  double text_width;
+  char text[32] = {'\0'};
+
+  sprintf(text, "[%03.0lf,%03.0lf]", mouse.x, mouse.y);
+  text_width = al_get_text_width(font, text);
   al_draw_text(font, color_white(),
-               100, 100, ALLEGRO_ALIGN_LEFT, text);
+               window_size.width - text_width, 10, ALLEGRO_ALIGN_LEFT, text);
 }
 
 /* draw the reference line for ball hitting */
@@ -647,6 +654,8 @@ void game_main_loop(game *g) {
       al_acknowledge_resize(g->core.display);
       background_resize(g->module.bg,
                         size_init(event.display.width, event.display.height, 0));
+      g->window_width = event.display.width;
+      g->window_height = event.display.height;
     }
 
     if (g->redraw && al_is_event_queue_empty(g->core.event_queue)) {
@@ -669,7 +678,9 @@ void game_main_loop(game *g) {
           // draw 2 buttons
 
           // draw mouse coordinates
-          draw_mouse_coordinates(g->mx, g->my, g->mouse_font);
+          draw_mouse_coordinates(point_init(g->mx, g->my, 0),
+                                 size_init(g->window_width, g->window_height, 0),
+                                 g->mouse_font);
 
           if (g->is_ready_to_hit)
             draw_referencing_line(g->module.balls[0].cx,
