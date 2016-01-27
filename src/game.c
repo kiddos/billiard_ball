@@ -2,6 +2,8 @@
 
 /* constants */
 const char* const GAME_LOADING_TEXT = "LOADING ...";
+const char* const GAME_NEW_GAME_TEXT = "NEW GAME";
+const char* const GAME_BACK_TEXT = "BACK";
 const char* const BUTTON_PRESSED_BITMAP = "./res/pics/button_pressed.png";
 const char* const BUTTON_RELEASED_BITMAP = "./res/pics/button_released.png";
 const char* const GAME_FONT_FILE_PATH = "./res/font/Junicode.ttf";
@@ -252,10 +254,11 @@ game * game_init() {
     return NULL;
   }
 
-  rect r = rect_init(g->window_width - g->window_width / 12,
-                     10, 0, g->window_width / 12, g->window_width / 24, 0);
-  g->module.new_game_button = button_init(r, "New Game",
+  rect r = rect_init(g->window_width - g->window_width / 8,
+                     10, 0, g->window_width / 8, g->window_height / 24, 0);
+  g->module.new_game_button = button_init(r, GAME_NEW_GAME_TEXT,
                                           GAME_FONT_FILE_PATH,
+                                          color_white(),
                                           BUTTON_PRESSED_BITMAP,
                                           BUTTON_RELEASED_BITMAP,
                                           BUTTON_RELEASED_BITMAP,
@@ -277,12 +280,15 @@ game * game_init() {
     return NULL;
   }
 
-  g->module.back_return_button = button_init(r, "Back",
-                                          "./res/font/Junicode.ttf",
-                                          "./res/pics/button_pressed.png",
-                                          "./res/pics/button_released.png",
-                                          "./res/pics/button_released.png",
-                                          NULL);
+  r = rect_init(0,
+                     0, 0, g->window_width / 12, g->window_height / 24, 0);
+  g->module.back_return_button = button_init(r, GAME_BACK_TEXT,
+                                             GAME_FONT_FILE_PATH,
+                                             color_white(),
+                                             BUTTON_PRESSED_BITMAP,
+                                             BUTTON_RELEASED_BITMAP,
+                                             BUTTON_RELEASED_BITMAP,
+                                             NULL);
   if (!g->module.back_return_button) {
     error_message("fail to create back return button");
     al_destroy_font(g->loading_font);
@@ -344,6 +350,22 @@ void game_destroy(game *g) {
     if (g->module.board) {
       regular_message("release game score board");
       destroy_score_board(g->module.board);
+    }
+    if (g->module.new_game_button) {
+      regular_message("release new game button");
+      button_destroy(g->module.new_game_button);
+    }
+    if (g->module.back_return_button) {
+      regular_message("release back button");
+      button_destroy(g->module.back_return_button);
+    }
+    if (g->ball_original_status) {
+      regular_message("release ball original status array");
+      free(g->ball_original_status);
+    }
+    if (g->ball_new_status) {
+      regular_message("release ball new status array");
+      free(g->ball_new_status);
     }
   }
   free(g);
@@ -580,53 +602,45 @@ void game_main_loop(game *g) {
         g->is_ready_to_hit = false;
       }
     } else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-      if (g->module.m->mode == GAME_MODE) {
-        if (is_mouse_on_ball(g->module.balls[0], g->mx, g->my)) {
-          g->start_x = event.mouse.x;
-          g->start_y = event.mouse.y;
+      switch (g->module.m->mode) {
+        case GAME_MODE:
+          g->mx = event.mouse.x;
+          g->my = event.mouse.y;
 
-          g->is_ready_to_hit = true;
-        }
+          // update button
+          button_update(g->module.new_game_button,
+                        point_init(g->mx, g->my, 0), true);
+          button_update(g->module.back_return_button,
+                        point_init(g->mx, g->my, 0), true);
 
-        // TODO
-        // if the mouse press on the buttons
-        /*if (event.mouse.x > NGB_X_POS &&*/
-            /*event.mouse.x < NGB_X_POS + NGB_WIDTH &&*/
-            /*event.mouse.y > NGB_Y_POS &&*/
-            /*event.mouse.y < NGB_Y_POS + NGB_HEIGHT) {*/
-          /*printf("new game button pressed\n");*/
-          /*reset_billiard_balls(g->balls);*/
-          /*reset_score_board(g->board);*/
+          // update balls
+          if (is_mouse_on_ball(g->module.balls[0], g->mx, g->my)) {
+            g->start_x = event.mouse.x;
+            g->start_y = event.mouse.y;
 
-          /*ngbutton_pressed = true;*/
-        /*}*/
-
-        /*if(event.mouse.x > BB_X_POS &&*/
-            /*event.mouse.x < BB_X_POS + BB_WIDTH &&*/
-            /*event.mouse.y > BB_Y_POS &&*/
-            /*event.mouse.y < BB_Y_POS + BB_HEIGHT)*/
-        /*{*/
-          /*bbutton_pressed = true;*/
-          /*printf("back button pressed\n");*/
-          /*mode = MENU_MODE;*/
-          /*reset_billiard_balls(balls);*/
-          /*reset_score_board(board);*/
-          /*set_menu_mode(m, DEFAULT_MENU_MODE);*/
-
-          /*bbutton_pressed = false;*/
-        /*}*/
-
+            g->is_ready_to_hit = true;
+          }
+          break;
+        case MENU_MODE:
+          break;
       }
     } else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
       if (g->module.m->mode == MENU_MODE) {
 
       } else if (g->module.m->mode == GAME_MODE) {
+        const int mx = event.mouse.x;
+        const int my = event.mouse.y;
+
+        // update button
+        button_update(g->module.new_game_button, point_init(mx, my, 0), false);
+        button_update(g->module.back_return_button, point_init(mx, my, 0), false);
+
         // if the mouse is not on the ball after the dragging
         // its ready to shoot the ball
-        if (!is_mouse_on_ball(g->module.balls[0], event.mouse.x, event.mouse.y) &&
+        if (!is_mouse_on_ball(g->module.balls[0], mx, my) &&
             g->is_ready_to_hit) {
-          g->end_x = event.mouse.x;
-          g->end_y = event.mouse.y;
+          g->end_x = mx;
+          g->end_y = my;
 
           g->dx = g->end_x - g->start_x;
           g->dy = g->end_y - g->start_y;
@@ -676,6 +690,8 @@ void game_main_loop(game *g) {
 
           // TODO
           // draw 2 buttons
+          button_draw(g->module.new_game_button);
+          button_draw(g->module.back_return_button);
 
           // draw mouse coordinates
           draw_mouse_coordinates(point_init(g->mx, g->my, 0),
