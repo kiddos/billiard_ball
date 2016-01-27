@@ -183,7 +183,8 @@ game * game_init() {
 
   /* modules */
   // background module
-  g->module.bg = create_background();
+  g->module.bg = background_init(
+      size_init(g->window_width, g->window_height, 0));
   if (!g->module.bg) {
     error_message("fail to create background");
     al_destroy_font(g->loading_font);
@@ -208,7 +209,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->module.bg);
+    background_destroy(g->module.bg);
     free(g);
     return NULL;
   }
@@ -224,7 +225,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->module.bg);
+    background_destroy(g->module.bg);
     destroy_billiard_balls(g->module.balls);
     free(g);
     return NULL;
@@ -241,7 +242,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->module.bg);
+    background_destroy(g->module.bg);
     destroy_billiard_balls(g->module.balls);
     destroy_menu(g->module.m);
     free(g);
@@ -265,7 +266,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->module.bg);
+    background_destroy(g->module.bg);
     destroy_billiard_balls(g->module.balls);
     destroy_menu(g->module.m);
     destroy_score_board(g->module.board);
@@ -288,7 +289,7 @@ game * game_init() {
     al_destroy_event_queue(g->core.event_queue);
     al_destroy_sample(g->bg_music);
     al_destroy_sample_instance(g->bg_music_instance);
-    destroy_background(g->module.bg);
+    background_destroy(g->module.bg);
     destroy_billiard_balls(g->module.balls);
     destroy_menu(g->module.m);
     destroy_score_board(g->module.board);
@@ -327,7 +328,7 @@ void game_destroy(game *g) {
     }
     if (g->module.bg) {
       regular_message("release game background module");
-      destroy_background(g->module.bg);
+      background_destroy(g->module.bg);
     }
     if (g->module.balls) {
       regular_message("release game ball module");
@@ -371,8 +372,8 @@ static void draw_mouse_coordinates(const int mx,
                                    const ALLEGRO_FONT *font) {
   char text[20] = {'\0'};
   sprintf(text, "[%03d,%03d]", mx, my);
-  /*al_draw_text(font, al_map_rgb(255, 255, 255),*/
-               /*MX, MY, ALLEGRO_ALIGN_LEFT, text);*/
+  al_draw_text(font, color_white(),
+               100, 100, ALLEGRO_ALIGN_LEFT, text);
 }
 
 /* draw the reference line for ball hitting */
@@ -644,6 +645,10 @@ void game_main_loop(game *g) {
         }
         g->is_ready_to_hit = false;
       }
+    } else if (event.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
+      al_acknowledge_resize(g->core.display);
+      background_resize(g->module.bg,
+                        size_init(event.display.width, event.display.height, 0));
     }
 
     if (g->redraw && al_is_event_queue_empty(g->core.event_queue)) {
@@ -658,9 +663,9 @@ void game_main_loop(game *g) {
           // drawings
 
           // draw the background first
-          draw_background(g->module.bg);
+          background_draw(g->module.bg);
           // draw the score board
-          draw_score_board(g->module.board);
+          /*draw_score_board(g->module.board);*/
 
           // TODO
           // draw 2 buttons
@@ -673,7 +678,7 @@ void game_main_loop(game *g) {
                                   g->module.balls[0].cy,
                                   g->mx, g->my);
 
-          draw_billiard_balls(g->module.balls);
+          /*draw_billiard_balls(g->module.balls);*/
           break;
       }
 
