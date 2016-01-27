@@ -1,11 +1,9 @@
 #include "game.h"
 
 /* constants */
-#define GAME_LOADING_TEXT "LOADING ..."
-// button bitmaps
-#define BUTTON_PRESSED_BITMAP "./res/pics/button_pressed.png"
-#define BUTTON_RELEASED_BITMAP "./res/pics/button_released.png"
-
+const char* const GAME_LOADING_TEXT = "LOADING ...";
+const char* const BUTTON_PRESSED_BITMAP = "./res/pics/button_pressed.png";
+const char* const BUTTON_RELEASED_BITMAP = "./res/pics/button_released.png";
 const char* const GAME_FONT_FILE_PATH = "./res/font/Junicode.ttf";
 const char* const GAME_BACKGROUND_MUSIC_PATH =
       "./res/sound/background_music.ogg";
@@ -688,9 +686,4 @@ void game_main_loop(game *g) {
     }
   }
 }
-
-/* undefine constant for scope */
-#undef GAME_LOADING_TEXT
-#undef BUTTON_PRESSED_BITMAP
-#undef BUTTON_RELEASED_BITMAP
 
