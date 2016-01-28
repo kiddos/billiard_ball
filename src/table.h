@@ -8,7 +8,6 @@ extern const double TABLE_HOLE_RATIO;
 extern const double TABLE_BORDER_WIDTH_RATIO;
 
 typedef struct table_t {
-  ALLEGRO_BITMAP *bitmap;
   double sx, sy, width, height;
   double hole_radius, border_width;
 } table, table_t;
