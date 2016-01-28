@@ -1,6 +1,7 @@
 set(ALLEGRO_LIBRARY
     -lallegro -lallegro_audio -lallegro_acodec -lallegro_font -lallegro_ttf
-    -lallegro_image -lallegro_dialog -lallegro_primitives -lm -fopenmp)
+    -lallegro_image -lallegro_dialog -lallegro_primitives
+    -lGL -lm -fopenmp)
 
 set(PROJECT_SRC background.c ball.c main.c menu.c score_board.c commons.c
     game.c message.c button.c cue.c table.c)
