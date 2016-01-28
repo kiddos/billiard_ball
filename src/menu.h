@@ -51,16 +51,15 @@
 #define ST_SY SCORE_TEXT_START_Y_POSITION
 #define ST_Y_MARG SCORE_TEXT_Y_MARGIN
 
-typedef struct menu_t
-{
-	int selection;
-	int mode;
-	int nrules;
-	char **rules;
-	char scores[ST_NUM][ST_MLENGTH];
-	ALLEGRO_FONT *title_text_font;
-	ALLEGRO_FONT *menu_font;
-	ALLEGRO_BITMAP *menu_bg;
+typedef struct menu_t {
+  int selection;
+  int mode;
+  int nrules;
+  char **rules;
+  char scores[ST_NUM][ST_MLENGTH];
+  ALLEGRO_FONT *title_text_font;
+  ALLEGRO_FONT *menu_font;
+  ALLEGRO_BITMAP *menu_bg;
 } menu;
 
 menu *create_menu();
