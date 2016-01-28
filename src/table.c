@@ -6,7 +6,6 @@ const double TABLE_BORDER_WIDTH_RATIO = 10.0;
 
 table *table_init(const char* const table_texture, size window_size) {
   table *t = (table *) malloc(sizeof(table));
-  t->bitmap = NULL;
   t->sx = 0;
   t->sy = 0;
 
@@ -18,13 +17,6 @@ table *table_init(const char* const table_texture, size window_size) {
     t->width = t->height * TABLE_RATIO;
   }
   t->hole_radius = t->width / TABLE_HOLE_RATIO;
-
-  t->bitmap = al_load_bitmap(table_texture);
-  if (!t->bitmap) {
-    error_message("fail to load table bitmap");
-    free(t);
-    return NULL;
-  }
   return t;
 }
 
@@ -32,4 +24,6 @@ void table_draw(table *t) {
 }
 
 void table_resize(table *t, size new_window_size) {
+  t->width = new_window_size.width;
+  t->height = new_window_size.height;
 }
