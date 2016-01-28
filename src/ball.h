@@ -28,14 +28,13 @@
 /* constants */
 extern const double BALL_DELTA_SCALE;
 
-typedef struct billiard_ball_t
-{
-	int number, score, is_on_table;
-	double cx, cy, dx, dy;
-	double bitmap_sw, bitmap_sh;
-	ALLEGRO_BITMAP *bitmap;
-	ALLEGRO_SAMPLE *collision_sound;
-	ALLEGRO_COLOR color;
+typedef struct billiard_ball_t {
+  ALLEGRO_BITMAP *bitmap;
+  ALLEGRO_SAMPLE *collision_sound;
+  ALLEGRO_COLOR color; // debuggin purpose
+  int number, score, is_on_table;
+  double cx, cy, dx, dy;
+  double bitmap_sw, bitmap_sh;
 } billiard_ball;
 
 billiard_ball *create_billiard_balls();
