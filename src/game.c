@@ -673,6 +673,10 @@ void game_main_loop(game *g) {
     }
 
     if (g->redraw && al_is_event_queue_empty(g->core.event_queue)) {
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+
       // clear the screen to black
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
