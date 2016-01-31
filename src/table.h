@@ -12,7 +12,7 @@ typedef struct table_t {
   double hole_radius, border_width;
 } table, table_t;
 
-table *table_init(const char* const table_texture, size window_size);
+table *table_init(size window_size);
 void table_draw(table *t);
 void table_resize(table *t, size new_window_size);
 
