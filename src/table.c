@@ -4,7 +4,7 @@ const double TABLE_RATIO = 2.0;
 const double TABLE_HOLE_RATIO = 20.0;
 const double TABLE_BORDER_WIDTH_RATIO = 10.0;
 
-table *table_init(const char* const table_texture, size window_size) {
+table *table_init(size window_size) {
   table *t = (table *) malloc(sizeof(table));
   t->sx = 0;
   t->sy = 0;
