@@ -7,6 +7,7 @@ background *background_init(size window_size) {
   bg->table_bg = NULL;
   bg->vertical_border = NULL;
   bg->horizontal_border = NULL;
+  bg->t = NULL;
   bg->bg_width = window_size.width;
   bg->bg_height = window_size.height;
 
@@ -46,6 +47,14 @@ background *background_init(size window_size) {
     al_destroy_config(config);
     free(bg);
     return NULL;
+  }
+
+  bg->t = table_init(size_init(bg->bg_width, bg->bg_height, 0));
+  if (!bg->t) {
+    al_destroy_bitmap(bg->table_bg);
+    al_destroy_bitmap(bg->vertical_border);
+    al_destroy_bitmap(bg->horizontal_border);
+    al_destroy_config(config);
   }
 
   al_destroy_config(config);
