@@ -2,12 +2,14 @@
 #define BACKGROUND_H
 
 #include "commons.h"
+#include "table.h"
 
 typedef struct background_t {
   ALLEGRO_BITMAP *table_bg;
   ALLEGRO_BITMAP *vertical_border;
   ALLEGRO_BITMAP *horizontal_border;
   ALLEGRO_SAMPLE *background_music;
+  table *t;
   uint32_t bg_width, bg_height;
   uint64_t last_update_time;
 } background, background_t;
