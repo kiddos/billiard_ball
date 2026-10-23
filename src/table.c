@@ -13,7 +13,7 @@ table *table_init(size window_size) {
     t->width = window_size.width;
     t->height = t->width / TABLE_RATIO;
   } else {
-    t->height = t->height;
+    t->height = window_size.height;
     t->width = t->height * TABLE_RATIO;
   }
   t->hole_radius = t->width / TABLE_HOLE_RATIO;

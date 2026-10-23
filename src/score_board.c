@@ -353,7 +353,7 @@ static int get_lowest_score_entry(score_board *board)
 void save_score_to_config(score_board *board, const int who, const int score)
 {
 	int entry_num;
-	const int num_str_size = 8;
+	const int num_str_size = 16;
 	const int section_str_size = 256;
 	const int max_entry_num = MAX_ENTRY_NUM;
 	char num_str[num_str_size];
