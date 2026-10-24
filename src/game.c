@@ -443,7 +443,7 @@ static void draw_referencing_line(const int sx,
 
 void game_main_loop(game *g) {
   int i;
-  int result;
+  int result = 0;
   ALLEGRO_EVENT event;
   while (g->running) {
     // listen to event
